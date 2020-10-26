@@ -8,8 +8,7 @@
 ● getElementById(id) 
 
 Crear un nodo
-Recordar que cada elemento genera 2 nodos.
-4 pasos:
+Recordar que cada elemento genera 2 nodos. 4 pasos:
 1. Creación de un nodo de tipo Element que represente al elemento.
 2. Creación de un nodo de tipo Text que represente el contenido del elemento.
 3. Añadir el nodo Text como nodo hijo del nodo Element.
