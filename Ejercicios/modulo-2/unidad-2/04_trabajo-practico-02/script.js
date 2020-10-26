@@ -95,15 +95,36 @@ var productos = [
     }
 ]
 
+var header = document.getElementById("header")
+header.setAttribute("style", "text-align: center;")
+
 function crearTabla() {
     // para crear tabla
-    var tabla = document.createElement("table");
     var container = document.createElement("div");
+    var tabla = document.createElement("table");
+    
+    var resultado = document.createElement("div");
+    var botonComprar = document.createElement("button");
+    var botonComprarTexto = document.createTextNode("Comprar");
+    var resumen = document.createElement("div");
+    var resumenTexto = document.createTextNode("Aqui verás el resultado de tu compra");
+    
+    // apends
     document.body.appendChild(container);
     container.appendChild(tabla);
+    document.body.appendChild(resultado);
+    botonComprar.appendChild(botonComprarTexto);
+    resumen.appendChild(resumenTexto);
+    resultado.appendChild(botonComprar);
+    resultado.appendChild(resumen);
 
     // style
+    document.body.setAttribute("style", "margin: 0; padding: 0; text-align: center;")
     container.setAttribute("style", "max-width: 600px; margin: 0 auto;");
+    tabla.setAttribute("style", "text-align: left;")
+    resultado.setAttribute("id", "div-resultado");
+    resultado.style.textAlign = "center";
+    botonComprar.setAttribute("id", "boton-comprar");
     
 
     // para crear cada elemento de la tabla
@@ -114,13 +135,19 @@ function crearTabla() {
         var fila = document.createElement("tr");
         var filaNombre = document.createElement("td");
         var filaPrecio = document.createElement("td");
+        var filaStatus = document.createElement("td");
+        filaStatus.setAttribute("id", "status" + i);
         var filaNombreTexto = document.createTextNode(productos[i].nombre);
         var filaPrecioTexto = document.createTextNode(productos[i].precio);
+        var filaStatusTexto = document.createTextNode("producto disponible");
+        var filaStatusTexto2 = document.createTextNode("producto disponible");
+
 
         // botones
         var boton = document.createElement("button");
         var botonTexto = document.createTextNode("Agregar al carrito");
         boton.id = productos[i].nombre;
+        boton.setAttribute("onClick", "agregarProductos(id)")
 
         /* appends */
         // filas y columnas
@@ -129,18 +156,30 @@ function crearTabla() {
         fila.appendChild(filaPrecio);
         filaNombre.appendChild(filaNombreTexto);
         filaPrecio.appendChild(filaPrecioTexto);
-
-        //botones
+        
         fila.appendChild(boton);
         boton.appendChild(botonTexto);
+
+        fila.appendChild(filaStatus);
+        filaStatus.appendChild(filaStatusTexto);
     }
+}
+
+var carrito = [];
+
+function agregarProductos(nombre) {
+
 }
 
 
 /* 
-setAttribute("id", function() {
-            for (let j = 0 ; j < productos.lenght ; j++) {
-                return "boton-" + j;
-            }
-        })
+        // filas y columnas
+        var fila = document.createElement("tr");
+        var filaNombre = document.createElement("td");
+        var filaPrecio = document.createElement("td");
+        var filaStatus = document.createElement("td");
+        filaStatus.setAttribute("id", "status" + i);
+        var filaNombreTexto = document.createTextNode(productos[i].nombre);
+        var filaPrecioTexto = document.createTextNode(productos[i].precio);
+        var filaStatusTexto = document.createTextNode("producto disponible");
 */
