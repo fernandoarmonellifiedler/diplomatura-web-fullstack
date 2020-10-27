@@ -95,6 +95,8 @@ var productos = [
     }
 ]
 
+var carrito = [];
+
 var header = document.getElementById("header")
 header.setAttribute("style", "text-align: center;")
 
@@ -102,59 +104,58 @@ function crearTabla() {
     // para crear tabla
     var container = document.createElement("div");
     var tabla = document.createElement("table");
+
+    document.body.appendChild(container);
+    container.appendChild(tabla);
+
+    document.body.setAttribute("style", "margin: 0; padding: 0; text-align: center;")
+    container.setAttribute("style", "max-width: 600px; margin: 0 auto;");
+    tabla.setAttribute("style", "text-align: left;")
     
+    // crear div de resultado
     var resultado = document.createElement("div");
     var botonComprar = document.createElement("button");
     var botonComprarTexto = document.createTextNode("Comprar");
     var resumen = document.createElement("div");
     var resumenTexto = document.createTextNode("Aqui verás el resultado de tu compra");
-    
-    // apends
-    document.body.appendChild(container);
-    container.appendChild(tabla);
+
     document.body.appendChild(resultado);
     botonComprar.appendChild(botonComprarTexto);
     resumen.appendChild(resumenTexto);
     resultado.appendChild(botonComprar);
     resultado.appendChild(resumen);
 
-    // style
-    document.body.setAttribute("style", "margin: 0; padding: 0; text-align: center;")
-    container.setAttribute("style", "max-width: 600px; margin: 0 auto;");
-    tabla.setAttribute("style", "text-align: left;")
     resultado.setAttribute("id", "div-resultado");
     resultado.style.textAlign = "center";
     botonComprar.setAttribute("id", "boton-comprar");
-    
 
     // para crear cada elemento de la tabla
     for(let i = 0 ; i < productos.length ; i++) {
-        
-        /* create */
+
         // filas y columnas
         var fila = document.createElement("tr");
         var filaNombre = document.createElement("td");
         var filaPrecio = document.createElement("td");
         var filaStatus = document.createElement("td");
-        filaStatus.setAttribute("id", "status" + i);
+        filaStatus.setAttribute("id", [i]);
         var filaNombreTexto = document.createTextNode(productos[i].nombre);
         var filaPrecioTexto = document.createTextNode(productos[i].precio);
         var filaStatusTexto = document.createTextNode("producto disponible");
-        var filaStatusTexto2 = document.createTextNode("producto disponible");
-
 
         // botones
         var boton = document.createElement("button");
         var botonTexto = document.createTextNode("Agregar al carrito");
         boton.id = productos[i].nombre;
-        boton.setAttribute("onClick", "agregarProductos(id)")
+        boton.setAttribute("onClick", "agregarProductos(carrito,id)")
+        //boton.addEventListener("click", agregarProductos())
+        
 
         /* appends */
         // filas y columnas
         tabla.appendChild(fila);
         fila.appendChild(filaNombre);
-        fila.appendChild(filaPrecio);
         filaNombre.appendChild(filaNombreTexto);
+        fila.appendChild(filaPrecio);
         filaPrecio.appendChild(filaPrecioTexto);
         
         fila.appendChild(boton);
@@ -165,10 +166,23 @@ function crearTabla() {
     }
 }
 
-var carrito = [];
 
-function agregarProductos(nombre) {
 
+function estaDisponible(array, nombre) {
+    if (array.hasOwnProperty(nombre)) {
+        return false; // si ya tiene un producto da false
+    } else {
+        return true; // si no lo tiene entonces esta disponible y da true
+    }
+}
+
+function agregarProductos(array, id) {
+    if (estaDisponible(array, id)) {
+        array.push(id);
+        return alert("Producto agregado!");
+    } else {
+        return alert("Producto no disponible!");
+    }
 }
 
 
@@ -182,4 +196,47 @@ function agregarProductos(nombre) {
         var filaNombreTexto = document.createTextNode(productos[i].nombre);
         var filaPrecioTexto = document.createTextNode(productos[i].precio);
         var filaStatusTexto = document.createTextNode("producto disponible");
+
+var precio = ...
+precio.textContent = 'Precio: $' + productos[i].precio;
+
+boton.innerHTML = "Comprar";
+boton.addEventListener("click", function() {
+    agregarProducto(productos[i]);
+})
+
+var carro = [];
+
+function agregarProducto() {
+    carro.push(productos[i]);
+}
+
+
+boton.addEventListener("click", function() {
+            agregarProducto(productos[i]);
+        });
+*/
+
+/* 
+
+function agregarProductos(id) {
+
+    for (let j = 0 ; j < productos.length ; j++) {
+        if (productos[j].nombre === id && estaDisponible(carrito,productos[j].nombre)) {
+            //alert(`producto ${productos[j].nombre} seleccionado`);
+            carrito.push(productos[j].nombre);
+        }
+    }
+    alert(carrito);
+}
+
+function agregarProductos(array, id) {
+    if (estaDisponible(array, id)) {
+        array.push(id);
+        return alert("Producto agregado!");
+    } else {
+        return alert("Producto no disponible!");
+    }
+}
+
 */
