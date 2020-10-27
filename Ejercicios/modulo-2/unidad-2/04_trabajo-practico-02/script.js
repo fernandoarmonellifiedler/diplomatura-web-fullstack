@@ -13,86 +13,26 @@ console.log(productos[i].precio);
 Desarrollar un “carrito de compras” donde el usuario presione sobre cada producto y el mismo quede guardado en el carrito. Luego, al oprimir el botón “Comprar”, calcular el importe final y mostrar los productos comprados junto con el total a pagar. Solo puede comprar una unidad de cada producto.*/
 
 var productos = [
-    {
-        nombre: "harina",
-        precio: 35
-    },
-    {
-        nombre: "pan",
-        precio: 25
-    },
-    {
-        nombre: "papa",
-        precio: 52
-    },
-    {
-        nombre: "palta",
-        precio: 55
-    },
-    {
-        nombre: "fideos",
-        precio: 85
-    },
-    {
-        nombre: "aceite",
-        precio: 350
-    },
-    {
-        nombre: "sopa",
-        precio: 86
-    },
-    {
-        nombre: "mermelada",
-        precio: 108
-    },
-    {
-        nombre: "porotos",
-        precio: 69
-    },
-    {
-        nombre: "lentejas",
-        precio: 85
-    },
-    {
-        nombre: "mandarina",
-        precio: 43
-    },
-    {
-        nombre: "banana",
-        precio: 79
-    },
-    {
-        nombre: "leche de almendras",
-        precio: 145
-    },
-    {
-        nombre: "papel higiénico",
-        precio: 147
-    },
-    {
-        nombre: "lavandina",
-        precio: 55
-    },
-    {
-        nombre: "alcohol en gel",
-        precio: 123
-    },
-    {
-        nombre: "shampoo",
-        precio: 400
-    },
-    {
-        nombre: "arroz",
-        precio: 66
-    },
-    {
-        nombre: "harina",
-        precio: 35
-    },
-    {
-        nombre: "salsa de tomate",
-        precio: 35
-    }
+    {nombre: "harina",precio: 35},
+    {nombre: "pan",precio: 25},
+    {nombre: "papa",precio: 52},
+    {nombre: "palta",precio: 55},
+    {nombre: "fideos",precio: 85},
+    {nombre: "aceite",precio: 350},
+    {nombre: "sopa",precio: 86},
+    {nombre: "mermelada",precio: 108},
+    {nombre: "porotos",precio: 69},
+    {nombre: "lentejas",precio: 85},
+    {nombre: "mandarina",precio: 43},
+    {nombre: "banana",precio: 79},
+    {nombre: "leche de almendras",precio: 145},
+    {nombre: "papel higiénico",precio: 147},
+    {nombre: "lavandina",precio: 55},
+    {nombre: "alcohol en gel",precio: 123},
+    {nombre: "shampoo",precio: 400},
+    {nombre: "arroz",precio: 66},
+    {nombre: "harina",precio: 35},
+    {nombre: "salsa de tomate",precio: 35}
 ]
 
 var carrito = [];
@@ -147,11 +87,10 @@ function crearTabla() {
         var botonTexto = document.createTextNode("Agregar al carrito");
         boton.id = productos[i].nombre;
         boton.setAttribute("onClick", "agregarProductos(carrito,id)")
-        //boton.addEventListener("click", agregarProductos())
-        
+        //boton.setAttribute("onClick", "agregarProductos(productos[i].nombre, productos[i].precio,carrito");
+        //boton.addEventListener("click", agregarProductos(carrito, productos[i].nombre));
 
         /* appends */
-        // filas y columnas
         tabla.appendChild(fila);
         fila.appendChild(filaNombre);
         filaNombre.appendChild(filaNombreTexto);
@@ -166,9 +105,17 @@ function crearTabla() {
     }
 }
 
+function agregarProductos(array, nombre) {
+    if (array.hasOwnProperty(nombre)) {
+        alert("Producto ya agregado!");
+    } else {
+        array.push(nombre);
+        alert("Producto agregado!");
+    }
+}
 
-
-function estaDisponible(array, nombre) {
+/* 
+ function estaDisponible(array, nombre) {
     if (array.hasOwnProperty(nombre)) {
         return false; // si ya tiene un producto da false
     } else {
@@ -184,59 +131,4 @@ function agregarProductos(array, id) {
         return alert("Producto no disponible!");
     }
 }
-
-
-/* 
-        // filas y columnas
-        var fila = document.createElement("tr");
-        var filaNombre = document.createElement("td");
-        var filaPrecio = document.createElement("td");
-        var filaStatus = document.createElement("td");
-        filaStatus.setAttribute("id", "status" + i);
-        var filaNombreTexto = document.createTextNode(productos[i].nombre);
-        var filaPrecioTexto = document.createTextNode(productos[i].precio);
-        var filaStatusTexto = document.createTextNode("producto disponible");
-
-var precio = ...
-precio.textContent = 'Precio: $' + productos[i].precio;
-
-boton.innerHTML = "Comprar";
-boton.addEventListener("click", function() {
-    agregarProducto(productos[i]);
-})
-
-var carro = [];
-
-function agregarProducto() {
-    carro.push(productos[i]);
-}
-
-
-boton.addEventListener("click", function() {
-            agregarProducto(productos[i]);
-        });
-*/
-
-/* 
-
-function agregarProductos(id) {
-
-    for (let j = 0 ; j < productos.length ; j++) {
-        if (productos[j].nombre === id && estaDisponible(carrito,productos[j].nombre)) {
-            //alert(`producto ${productos[j].nombre} seleccionado`);
-            carrito.push(productos[j].nombre);
-        }
-    }
-    alert(carrito);
-}
-
-function agregarProductos(array, id) {
-    if (estaDisponible(array, id)) {
-        array.push(id);
-        return alert("Producto agregado!");
-    } else {
-        return alert("Producto no disponible!");
-    }
-}
-
 */
