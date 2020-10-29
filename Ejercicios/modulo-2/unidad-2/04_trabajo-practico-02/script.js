@@ -76,7 +76,7 @@ function crearTabla() { // esta funcion crea todo el html que va en el body
     for(let i = 0 ; i < productos.length ; i++) {
 
         // se crea una fila por cada producto del vector "productos"
-        var fila = document.createElement("tr"); // esto crea cada fila de la tabla (<tr>). Cada fila tendrá 4 columnas <td>
+        var fila = document.createElement("tr"); // esto crea cada fila de la tabla (<tr>). Cada fila tendrá 3 columnas <td>
         tabla.appendChild(fila); // se agrega cada fila a la tabla
 
         // 1) nombre del producto
@@ -98,9 +98,9 @@ function crearTabla() { // esta funcion crea todo el html que va en el body
         boton.appendChild(botonTexto);
 
             boton.addEventListener("click", function() {
-                if (!carrito.includes(productos[i].nombre)) { // si el carrito no tiene el producto seleccionado (! = negación) entonces:
+                if (!carrito.includes(" " + productos[i].nombre)) { // si el carrito no tiene el producto seleccionado (! = negación) entonces:
                     carrito.push(" " + productos[i].nombre); // ... lo agrega al vector del carrito
-                    carritoConPrecio.push(productos[i].precio) // (agregué un segundo vector solo para sumar los precios al final)
+                    carritoConPrecio.push(productos[i].precio); // (agregué un segundo vector solo para sumar los precios al final)
 
                     resumenTexto.textContent += " - " // estos son pequeños ajustes para exhibir los valores al final con espacio entre ellos
                     resumenTexto.textContent += productos[i].nombre;
@@ -109,16 +109,6 @@ function crearTabla() { // esta funcion crea todo el html que va en el body
                     window.alert("Solo puedes agregar una unidad de cada producto!"); 
                 }
             });
-
-        /* TRECHO DE CODIGO DESCARTADO
-        // 4) status de compra del producto
-        var filaStatus = document.createElement("td"); // status de compra: producto disponible / producto no disponible
-        fila.appendChild(filaStatus);
-        var filaStatusTexto = document.createTextNode("producto disponible");
-        filaStatus.appendChild(filaStatusTexto);
-        //filaStatus.setAttribute("id", [i]); // se utiliza .setAttribute() para darle un id al status de compra. La idea es poder cambiar este status luego
-        filaStatus.id = productos[i].nombre;
-        */
     }
 
     // D_ DIV QUE EXHIBE EL BOTON DE COMPRA Y EL TOTAL DE LA COMPRA
