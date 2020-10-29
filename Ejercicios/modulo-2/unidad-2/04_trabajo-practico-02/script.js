@@ -38,7 +38,6 @@ var productos = [
 var carrito = []; // array/vector que contendrá los elementos seleccionados para la compra
 var carritoConPrecio = [];
 
-// 1) PRIMER PASO: TODO EL HTML DEL DOCUMENTO
 
 function crearTabla() { // esta funcion crea todo el html que va en el body
     
@@ -133,17 +132,16 @@ function crearTabla() { // esta funcion crea todo el html que va en el body
     var botonComprarTexto = document.createTextNode("Comprar");
     botonComprar.appendChild(botonComprarTexto);
     resultado.appendChild(botonComprar);
-    botonComprar.setAttribute("id", "boton-comprar");
-    botonComprar.setAttribute("style", "margin-top: 25px;");
+    botonComprar.setAttribute("style", "margin-top: 25px;"); // estilo del boton
 
         botonComprar.addEventListener("click", function() { // evento y funcion para calcular el total
-            var total = document.createElement("p"); // se crea al clickear un nuevo parrafo
+            var total = document.createElement("p"); // al clickear se crea un nuevo parrafo
             var totalTexto = document.createTextNode("Total de tu compra: $");
             total.appendChild(totalTexto);
 
-            var listaFinal = document.createElement("p"); // se crea al clickear un nuevo parrafo
+            var listaFinal = document.createElement("p"); // aqui tambien se crea un nuevo parrafo
             var listaFinalTexto = document.createTextNode("Sus productos seleccionados: ");
-            listaFinalTexto.textContent += carrito + " ";
+            listaFinalTexto.textContent += carrito + " "; // se exhibe el vector conteniendo los productos
             listaFinal.appendChild(listaFinalTexto);
 
             // ciclo for para sumar los valores contenidos en el vector con los precios acumulados
@@ -160,7 +158,7 @@ function crearTabla() { // esta funcion crea todo el html que va en el body
             resultado.removeChild(resumen);
         });
 
-    // texto que resume la compra
+    // finalmente, este es el texto que resume la compra previo a clickear en el boton "Comprar"
     var resumenTitulo = document.createElement("p");
     var resumenTituloTexto = document.createTextNode("Aqui verás el resultado de tu compra:");
     resumenTitulo.appendChild(resumenTituloTexto);
@@ -170,71 +168,4 @@ function crearTabla() { // esta funcion crea todo el html que va en el body
     var resumenTexto = document.createTextNode("");
     resumen.appendChild(resumenTexto);
     resultado.appendChild(resumen);
-
-    
-
-} // aqui termina la funcion crearTabla() que da forma a todo el HTML del documento.
-
-
-/* ======================================================================================== */
-// 2) SEGUNDA PARTE: INTERACTIVIDAD DE LOS BOTONES ("agregar al carrito", "Comprar")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* NOTAS:
-//boton.setAttribute("onClick", "agregarProductos(carrito,id)") // 
-//boton.setAttribute("onClick", "agregarProductos(productos[i].nombre, productos[i].precio,carrito");
-//boton.addEventListener("click", agregarProductos(productos[i].nombre, productos[i.precio]));
-//boton.addEventListener("click", alert);
-
-
-
-
- function estaDisponible(array, nombre) {
-    if (array.hasOwnProperty(nombre)) {
-        return false; // si ya tiene un producto da false
-    } else {
-        return true; // si no lo tiene entonces esta disponible y da true
-    }
 }
-
-function agregarProductos(array, id) {
-    if (estaDisponible(array, id)) {
-        array.push(id);
-        return alert("Producto agregado!");
-    } else {
-        return alert("Producto no disponible!");
-    }
-}
-
-function agregarProductos(array, nombre) {
-    if (array.hasOwnProperty(nombre)) {
-        alert("Producto ya agregado!");
-    } else {
-        array.push(nombre);
-        alert("Producto agregado!");
-    }
-}
-
-
-window.carrito.push(window.productos[e.target.id]); tuve que poner esto para que me reconozca el id dentro del td
-
-*/
