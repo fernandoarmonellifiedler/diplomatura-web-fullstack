@@ -146,6 +146,7 @@ function crearTabla() { // esta funcion crea todo el html que va en el body
 
             resultado.removeChild(resumenTitulo); // y se eliminan los textos que ennumeraban los productos seleccionados
             resultado.removeChild(resumen);
+            resultado.removeChild(botonComprar);
         });
 
     // finalmente, este es el texto que resume la compra previo a clickear en el boton "Comprar"
