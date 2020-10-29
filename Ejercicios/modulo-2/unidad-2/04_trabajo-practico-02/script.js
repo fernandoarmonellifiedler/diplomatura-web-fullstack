@@ -88,7 +88,7 @@ function crearTabla() { // esta funcion crea todo el html que va en el body
         // 2) precio del producto
         var filaPrecio = document.createElement("td"); // precio del producto
         fila.appendChild(filaPrecio);
-        var filaPrecioTexto = document.createTextNode(productos[i].precio);
+        var filaPrecioTexto = document.createTextNode("$" + productos[i].precio);
         filaPrecio.appendChild(filaPrecioTexto);
 
         // 3) boton de "agregar al carrito"
