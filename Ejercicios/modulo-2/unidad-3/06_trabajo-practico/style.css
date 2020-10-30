@@ -1,0 +1,29 @@
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+table {
+    border-collapse: collapse;
+    width: 50%;
+}
+
+table, th, td {
+    border: 1px solid gray;
+    text-align: center;
+}
+
+th {
+    background-color: papayawhip;
+    min-width: 200px;
+}
+
+td {
+    min-width: 200px;
+}
+
+.botonera {
+    margin-top: 25px;
+}
