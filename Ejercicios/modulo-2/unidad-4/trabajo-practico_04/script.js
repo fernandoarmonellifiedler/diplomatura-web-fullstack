@@ -4,6 +4,7 @@
 NOTAS:
 - Reemplazé el loop for por forEach para recorrer el vector de productos
 - Dentro del forEach utilizé una funcion arrow
+- no consigo que funcione el findindex en el boton de agregar al carrito
 */
 
 var productos = [
