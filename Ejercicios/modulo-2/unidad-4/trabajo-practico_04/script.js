@@ -1,5 +1,10 @@
 /* Consigna:
-- Modificar el carrito desarrollado en la Unidad 2 para utilizar funciones arrow.*/
+- Modificar el carrito desarrollado en la Unidad 2 para utilizar funciones arrow.
+
+NOTAS:
+- Reemplazé el loop for por forEach para recorrer el vector de productos
+- Dentro del forEach utilizé una funcion arrow
+*/
 
 var productos = [
     {nombre: "harina", precio: 35},
@@ -31,15 +36,15 @@ var carritoConPrecio = [];
 function crearTabla() { 
     
     // A_CREANDO EL HEADER CON SU TITULO Y DESCRIPCION
-    var header = document.createElement("header"); // crea el header
-    header.setAttribute("style", "text-align: center;"); // estilo del header
+    var header = document.createElement("header"); 
+    header.setAttribute("style", "text-align: center;");
 
-    var title = document.createElement("h1"); // crea titulo
-    var titleText = document.createTextNode("Carrito de compras"); // crea texto del titulo
-    title.appendChild(titleText); // el texto del titulo se coloca como child dentro del titulo
-    header.appendChild(title); // se agrega el titulo (h1) dentro del header
+    var title = document.createElement("h1"); 
+    var titleText = document.createTextNode("Carrito de compras"); 
+    title.appendChild(titleText);
+    header.appendChild(title);
 
-    var descripcion = document.createElement("p"); // se repiten los pasos para la descripcion
+    var descripcion = document.createElement("p");
     var descripcionText = document.createTextNode("Seleccione uno o más productos para agregar a su carrito de compras. Al finalizar presione el botón 'Comprar'.");
     descripcion.appendChild(descripcionText);
     header.appendChild(descripcion);
@@ -48,7 +53,7 @@ function crearTabla() {
     descripcion2.appendChild(descripcionText2);
     header.appendChild(descripcion2);
 
-    document.body.appendChild(header); // se agrega finalmente el header al body del documento HTML
+    document.body.appendChild(header);
 
     // B_CREANDO LA TABLA
     var container = document.createElement("div"); // div container de la tabla
@@ -62,7 +67,7 @@ function crearTabla() {
     tabla.setAttribute("style", "text-align: left; min-width: 300px;")
 
     // C_LOOP/CICLO FOR PARA CREAR CADA ELEMENTO DE LA TABLA SEGUN EL VECTOR "PRODUCTOS"
-    for(let i = 0 ; i < productos.length ; i++) {
+    productos.forEach(producto => {
 
         // crear una fila por cada producto del vector "productos"
         var fila = document.createElement("tr");
@@ -71,13 +76,13 @@ function crearTabla() {
         // 1) nombre del producto
         var filaNombre = document.createElement("td"); 
         fila.appendChild(filaNombre);
-        var filaNombreTexto = document.createTextNode(productos[i].nombre);
+        var filaNombreTexto = document.createTextNode(producto.nombre);
         filaNombre.appendChild(filaNombreTexto);
 
         // 2) precio del producto
         var filaPrecio = document.createElement("td"); // precio del producto
         fila.appendChild(filaPrecio);
-        var filaPrecioTexto = document.createTextNode("$" + productos[i].precio);
+        var filaPrecioTexto = document.createTextNode("$" + producto.precio);
         filaPrecio.appendChild(filaPrecioTexto);
 
         // 3) boton de "agregar al carrito"
@@ -87,18 +92,18 @@ function crearTabla() {
         boton.appendChild(botonTexto);
 
             boton.addEventListener("click", function() {
-                if (!carrito.includes(" " + productos[i].nombre)) {
-                    carrito.push(" " + productos[i].nombre); 
-                    carritoConPrecio.push(productos[i].precio);
+                if (!carrito.includes(" " + producto.nombre)) {
+                    carrito.push(" " + producto.nombre); 
+                    carritoConPrecio.push(producto.precio);
 
                     resumenTexto.textContent += " - "
-                    resumenTexto.textContent += productos[i].nombre;
+                    resumenTexto.textContent += producto.nombre;
                     resumenTituloTexto.textContent = "Productos en el carrito:"
                 } else {
                     window.alert("Solo puedes agregar una unidad de cada producto!"); 
                 }
             });
-    }
+    })
 
     // D_ DIV QUE EXHIBE EL BOTON DE COMPRA Y EL TOTAL DE LA COMPRA
 
