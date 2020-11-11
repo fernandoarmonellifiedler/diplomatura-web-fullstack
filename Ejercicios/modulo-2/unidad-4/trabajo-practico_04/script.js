@@ -2,9 +2,9 @@
 - Modificar el carrito desarrollado en la Unidad 2 para utilizar funciones arrow.
 
 NOTAS:
-- Reemplazé el loop for por forEach para recorrer el vector de productos
-- Dentro del forEach utilizé una funcion arrow
-- no consigo que funcione el findindex en el boton de agregar al carrito
+- Reemplazé el loop for por forEach para recorrer el vector de productos y el vector carritoConPrecio.
+- Dentro del forEach utilizé funciones arrow.
+- sustituidas las funciones anónimas por funciones arrow dentro de los listeners en los botones.
 */
 
 var productos = [
@@ -92,7 +92,7 @@ function crearTabla() {
         var botonTexto = document.createTextNode("Agregar al carrito");
         boton.appendChild(botonTexto);
 
-            boton.addEventListener("click", function() {
+            boton.addEventListener("click", () => {
                 if (!carrito.includes(" " + producto.nombre)) {
                     carrito.push(" " + producto.nombre); 
                     carritoConPrecio.push(producto.precio);
@@ -119,7 +119,7 @@ function crearTabla() {
     resultado.appendChild(botonComprar);
     botonComprar.setAttribute("style", "margin-top: 25px;");
 
-        botonComprar.addEventListener("click", function() {
+        botonComprar.addEventListener("click", () => {
             var total = document.createElement("p"); // nuevo parrafo
             var totalTexto = document.createTextNode("Total de tu compra: $");
             total.appendChild(totalTexto);
@@ -131,9 +131,9 @@ function crearTabla() {
 
             // sumar los valores contenidos en el vector carritoConPrecio
             var suma = 0;
-            for (let j = 0 ; j < carritoConPrecio.length ; j++) {
-                suma = suma + carritoConPrecio[j];
-            };
+            carritoConPrecio.forEach(item => {
+                suma = suma + item;
+            });
             totalTexto.textContent += suma; // total
 
             resultado.appendChild(total);
