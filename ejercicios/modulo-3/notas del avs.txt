@@ -1,0 +1,34 @@
+// iniciar un nuevo proyecto// 
+1. npm init
+
+// 2. crear el app.js
+
+// 3. instalar los paquetes ( npm install <nombre_paquete>)// Esto crea el package.JSON, package-lock.JSON y node_modules
+
+
+
+
+// Para pasar tu proyecto a alguien// Comprimir todo MENOS node_module// Para usar el proyecto de alguien
+
+// 1. Descomprimir
+
+// 2. npm install  <- esto crea el node_modules
+
+--------------------------
+
+Paso a paso:
+- crear carpeta del proyecto
+- ingresar a la carpeta desde cmd
+- npm init
+- desde editor de codigo creap app.js
+- desde cmd "npm install"
+- npm install --save express
+- en app.js:
+
+var express = require('express');
+var app = express();
+
+app.listen(3000, function () {
+ console.log('Example app listening on port 3000!');
+});
+

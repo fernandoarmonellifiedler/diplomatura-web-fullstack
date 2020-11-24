@@ -1,7 +1,0 @@
-// iniciar un nuevo proyecto// 1. npm init
-// 2. crear el app.js
-// 3. instalar los paquetes ( npm install <nombre_paquete>)// Esto crea el package.JSON, package-lock.JSON y node_modules
-
-// Para pasar tu proyecto a alguien// Comprimir todo MENOS node_module// Para usar el proyecto de alguien
-// 1. Descomprimir
-// 2. npm install  <- esto crea el node_modules
