@@ -2,6 +2,7 @@
 Para poder recibir información desde formularios en Express, es necesario incluir el
 middleware:
 app.use(express.urlencoded());
+
 El método POST es utilizado para recibir la información que el usuario ingresó en un
 formulario. En el caso del ejemplo que sigue, el formulario es:
 
@@ -23,11 +24,9 @@ formulario. En el caso del ejemplo que sigue, el formulario es:
 
 Se recibe la información del formulario por método POST, es decir, que viaja en el cuerpo
 del mensaje (body) el nombre y contenido de cada campo del formulario.
-En action se indica a dónde enviar la información del formulario una vez que el usuario
-oprime el botón. En este caso, se trata de una ruta del mismo servidor. La ruta es “/form”.
+En action se indica a dónde enviar la información del formulario una vez que el usuario oprime el botón. En este caso, se trata de una ruta del mismo servidor. La ruta es “/form”.
 
-Ya en el servidor, la información del formulario se recibe en la variable req y como fue
-mediante método POST, se encuentra en el cuerpo (body) de la variable req.
+Ya en el servidor, la información del formulario se recibe en la variable req y como fue mediante método POST, se encuentra en el cuerpo (body) de la variable req.
 En la variable res colocamos el mensaje que el servidor retorna al cliente. En este
 ejemplo, mediante el método send, se le envía al cliente (el browser), una cadena (string). */
 
@@ -39,6 +38,7 @@ app.post('/form', function (req, res) {
 // ---------------------------------
 
 /* Otras formas de devolver información al cliente
+
 Caso 1
 En este caso, enviamos como respuesta también un string pero que contiene código HTML el que será interpretado por el navegador.
 Se incluye contenido “dinámico” en el html ya que se agrega el nombre y el mensaje que fueron enviados desde el formulario.*/

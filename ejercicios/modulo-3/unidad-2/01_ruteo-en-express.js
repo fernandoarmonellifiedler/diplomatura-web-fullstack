@@ -1,9 +1,11 @@
 /* Ruteo en Express:
 - Direccionamiento básico
 Cómo responde una aplicación a una solicitud del cliente en un determinado punto final?
+
 Tiene 2 componentes básicos:
 ● una vía de acceso (URI)
 ● un método de solicitud HTTP específico (GET, POST, etc.)
+
 Estructura de una ruta
     app.METHOD(PATH, HANDLER)
     

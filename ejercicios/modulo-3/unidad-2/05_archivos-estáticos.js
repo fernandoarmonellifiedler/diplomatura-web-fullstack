@@ -1,4 +1,5 @@
 /* Archivos estáticos
+
 Por ejemplo, imágenes, archivos CSS y archivos JavaScript.
 Hay que pasar el nombre de la carpeta que contiene los archivos estáticos con la
 siguiente sentencia:
@@ -41,7 +42,6 @@ http:localhost:3000/static/hello.html
 La vía de acceso que se proporciona sigue siendo relativa a la carpeta desde donde inicia
 el proceso node.
 
-Por eso, si se ejecuta la aplicación desde cualquier otra carpeta, es más seguro utilizar la
-vía de acceso absoluta de la carpeta a la que se desea dar servicio:
+Por eso, si se ejecuta la aplicación desde cualquier otra carpeta, es más seguro utilizar la vía de acceso absoluta de la carpeta a la que se desea dar servicio:
 app.use('/static', express.static(__dirname + 'public'));
 */
