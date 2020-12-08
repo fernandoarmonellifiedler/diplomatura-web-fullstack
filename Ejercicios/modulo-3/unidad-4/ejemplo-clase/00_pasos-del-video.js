@@ -119,4 +119,5 @@ Como transformar el uso de callbacks con mysql para la conexion usando asyc/awai
 ---------------------------------
 
 Nota: hasta aqui todo funcionando OK. Surgió un problema que conseguí dejando el campo de password vacío
+video detenido en 1:10:25
 */
