@@ -1,4 +1,8 @@
-/* Paso a paso del video
+/* Paso a paso del video:
+- proceso completo de conexión de base de datos con Express.
+- validaciones
+- try/catch
+- async/await
 
 // Preparando entorno de trabajo
 - npm init (en la carpeta donde vamos a trabajar)
@@ -61,7 +65,7 @@ Desarrollo de la logica de negocio
     - GET para devolver todas las categorias
     - GET + id para devolver solo una categoria
     - POST para guardar una categoria nueva
-    - PUT para modificar una cat existente
+    - PUT para modificar una categoria existente
     - DELETE para borrar una categoria existente
 
 (Para productos y listas iremos haciendo lo mismo)
