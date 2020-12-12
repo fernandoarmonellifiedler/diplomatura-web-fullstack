@@ -1,7 +1,6 @@
 /* Operadores
 
-Son palabras reservadas o un caracter utilizada en SQL que permite modificar el
-resultado
+Son palabras reservadas o un caracter utilizada en SQL que permite modificar el resultado
 
 Se pueden utilizar para modificar el select o el where
 

@@ -13,11 +13,11 @@
     - require mysql
 - como tendremos que recibir info en el body del formulario:
     - 1) usando urlencoded
-    - 2) usando JSON (como en este ejemplo)
+    - 2) usando JSON (como en este ejemplo) */
 
 app.use(express.json())
 
-- esto permite el mapeo de la peticion json a object js
+/*- esto permite el mapeo de la peticion json a object js
 
 - agregamos al final app.listen para crear el puerto y poder testear nuestra app
 
@@ -40,7 +40,7 @@ Creación de la base de datos en phpMyAdmin
 - creamos nueva base de datos y agregamos columnas. 
     - 1er col: id y autoincremental
     - 2da col: nombre / tipo VARCHAR y guardamos
-- creamos nueva categoria para los productos con id, nombre, descripcion y categoria_id (que va a hacer la conexion con la tabla de ctaegorias)
+- creamos nueva categoria para los productos con id, nombre, descripcion y categoria_id (que va a hacer la conexion con la tabla de categorias)
 - creamos una nueva tabla "listaencabezado" que será el encabezado con id y nombre
 - finalmente, una nueva tabla "listaitems" con id, cantidad, producto_id (conecta con la tabla "productos") y listaencabezado_id (para saber a que lista corresponden los productos)
 

@@ -17,12 +17,12 @@ SELECT <listado de columnas separadas por coma o *>
     FROM <nombre de la tabla>
     WHERE <listado de condiciones>
 
-Ejemplo:
+Ejemplo: tabla 'curso'
 
 id | Nombre                      | Turno
-1    Professional Webmaster         Noche
+1    Professional Webmaster        Noche
 2    Experto universitario en PHP  Tarde
-3    Professional Webmaster         Tarde
+3    Professional Webmaster        Tarde
 
 SELECT id, nombre, turno
     FROM curso
