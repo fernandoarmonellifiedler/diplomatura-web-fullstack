@@ -1,6 +1,5 @@
 /* Recepción de formularios
-Para poder recibir información desde formularios en Express, es necesario incluir el
-middleware:
+Para poder recibir información desde formularios en Express, es necesario incluir el middleware:
 app.use(express.urlencoded());
 
 El método POST es utilizado para recibir la información que el usuario ingresó en un

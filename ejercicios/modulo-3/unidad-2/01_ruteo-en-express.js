@@ -41,18 +41,17 @@ Se puede hacer de 2 formas:
 ● http://localhost:3000/usuario/Lorena
 ● http://localhost:3000/usuario?nombre=Lorena
 
-Pedido con parámetros
-● http://localhost:3000/usuario/Lorena 
+ Pedido con parámetros
+● http://localhost:3000/usuario/Lorena */
 
 app.get('/usuario/:nombre', function (req, res) {
     res.send('Hola'+req.params.nombre);
 });
 
-Pedido con parámetros 2
-http://localhost:3000/usuario?nombre=Lorena
+/* Pedido con parámetros 2
+http://localhost:3000/usuario?nombre=Lorena */
 
 app.get('/usuario', function (req, res) {
     // llamar con ?nombre=algo
     res.send('Hola'+req.query.nombre);
 });
-*/

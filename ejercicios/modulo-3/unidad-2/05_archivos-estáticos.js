@@ -2,11 +2,11 @@
 
 Por ejemplo, imágenes, archivos CSS y archivos JavaScript.
 Hay que pasar el nombre de la carpeta que contiene los archivos estáticos con la
-siguiente sentencia:
+siguiente sentencia: */
 
-app.use(express.static('public));
+app.use(express.static('public'));
 
-Ahora se pueden cargar los archivos que hay en la carpeta 'carpeta', por ejemplo:
+/* Ahora se pueden cargar los archivos que hay en la carpeta 'carpeta', por ejemplo:
 
 http:localhost:3000/images/kitten.jpg
 http:localhost:3000/css/style.css

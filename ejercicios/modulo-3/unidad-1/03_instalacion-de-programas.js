@@ -34,6 +34,7 @@ Se abre el navegador y va a la página de la documentación del módulo.
 Utilizar los módulos
 
 Desde el proyecto en Node.js
+
 var modulo = require('modulo'); .
 Package.json
 NPM - package.json
