@@ -61,8 +61,7 @@ El servidor retorna un único código de estado por respuesta.
 Información extra que el servidor le entrega al cliente con respecto a la respuesta.
 
 3) Cuerpo de la respuesta
-Los datos que retorna el servidor al cliente. Por ejemplo, cuando el cliente le solicita un
-recurso, el servidor retorna en el cuerpo de la petición el recurso solicitado.
+Los datos que retorna el servidor al cliente. Por ejemplo, cuando el cliente le solicita un recurso, el servidor retorna en el cuerpo de la petición el recurso solicitado.
 
 Código de estado | 200
 Encabezados      | Content-type: application/json
