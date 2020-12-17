@@ -13,7 +13,7 @@ const app = express();
 const port = 3000;
 
 app.use(express.json());
-app.use(express.urlencoded({extended: true}));
+app.use(express.urlencoded({ extended: true }));
 
 // Para trabajar con base de datos mysql
 const conexion = mysql.createConnection({
@@ -37,9 +37,11 @@ const utilQuery = util.promisify(conexion.query).bind(conexion);
 /* ===== CATEGORIA ===== */
 app.get('/categoria', async (req, res) => {
     try {
-        
+        const query = 'SELECT * FROM categoria';
 
+        const respuesta = await utilQuery(query);
 
+        res.send({ "respuesta": respuesta });
     }
     catch (e) {
         console.error(e.message);
@@ -49,9 +51,15 @@ app.get('/categoria', async (req, res) => {
 
 app.get('/categoria/:id', async (req, res) => {
     try {
-        
+        const query = 'SELECT * FROM categoria WHERE id = ?';
 
-        
+        const respuesta = await utilQuery(query, [req.params.id]);
+
+        if (respuesta.length === 0) {
+            throw new Error("Categoria no encontrada");
+        }
+
+        res.send({ "respuesta": respuesta });
     }
     catch (e) {
         console.error(e.message);
@@ -61,9 +69,24 @@ app.get('/categoria/:id', async (req, res) => {
 
 app.post('/categoria', async (req, res) => {
     try {
-        
+        if (!req.body.nombre_categoria) {
+            throw new Error("Debes enviar un nombre para agregar una categoria!");
+        }
 
+        const nombre_categoria = req.body.nombre_categoria.toUpperCase();
 
+        let query = 'SELECT id FROM categoria WHERE id = ?';
+
+        let respuesta = await utilQuery(query, [nombre_categoria]);
+
+        if (respuesta.length > 0) {
+            throw new Error("Ese nombre ya existe!");
+        }
+
+        query = 'INSERT INTO categoria (nombre_categoria) VALUES (?)';
+        respuesta = await utilQuery(query, [nombre_categoria]);
+
+        res.status(200).send({ "respuesta": respuesta });
     }
     catch (e) {
         console.error(e.message);
@@ -73,9 +96,25 @@ app.post('/categoria', async (req, res) => {
 
 app.delete('/categoria/:id', async (req, res) => {
     try {
-        
+        // valida si categoria tiene nombre
+        if (req.params.nombre_categoria === undefined) {
+            throw new Error("No existe la categoria indicada");
+        }
 
+        let query = 'SELECT * FROM categoria WHERE id = ?';
+        let respuesta = await utilQuery(query, [req.params.id]);
+        /* Falta validar si existen libros asociados
+        let respuesta = await utilQuery(query, [req.params.id]);
+        console.log(respuesta, respuesta.length);
+        if (respuesta.length > 0) {
+            throw new Error("Aun existen datos asociados. No es posible borrar esta categoria");
+        }
+        */
 
+        query = 'DELETE FROM categoria WHERE id = ?';
+        respuesta = await utilQuery(query, [req.params.id]);
+
+        res.send({ "respuesta": respuesta });
     }
     catch (e) {
         console.error(e.message);
@@ -86,7 +125,7 @@ app.delete('/categoria/:id', async (req, res) => {
 /* ===== LIBRO ===== */
 app.get('/libro', async (req, res) => {
     try {
-        
+
 
 
     }
@@ -98,7 +137,7 @@ app.get('/libro', async (req, res) => {
 
 app.get('/libro/:id', async (req, res) => {
     try {
-        
+
 
 
     }
@@ -110,7 +149,7 @@ app.get('/libro/:id', async (req, res) => {
 
 app.post('/libro', async (req, res) => {
     try {
-        
+
 
 
     }
@@ -122,7 +161,7 @@ app.post('/libro', async (req, res) => {
 
 app.put('/libro/:id', async (req, res) => {
     try {
-        
+
 
 
     }
@@ -134,7 +173,7 @@ app.put('/libro/:id', async (req, res) => {
 
 app.put('/libro/prestar/:id', async (req, res) => {
     try {
-        
+
 
 
     }
@@ -146,7 +185,7 @@ app.put('/libro/prestar/:id', async (req, res) => {
 
 app.put('/libro/devolver/:id', async (req, res) => {
     try {
-        
+
 
 
     }
@@ -158,7 +197,7 @@ app.put('/libro/devolver/:id', async (req, res) => {
 
 app.delete('/libro/:id', async (req, res) => {
     try {
-        
+
 
 
     }
@@ -171,7 +210,7 @@ app.delete('/libro/:id', async (req, res) => {
 /* ===== PERSONA ===== */
 app.get('/persona', async (req, res) => {
     try {
-        
+
 
 
     }
@@ -183,7 +222,7 @@ app.get('/persona', async (req, res) => {
 
 app.get('/persona/:id', async (req, res) => {
     try {
-        
+
 
 
     }
@@ -195,7 +234,7 @@ app.get('/persona/:id', async (req, res) => {
 
 app.post('/persona', async (req, res) => {
     try {
-        
+
 
 
     }
@@ -207,7 +246,7 @@ app.post('/persona', async (req, res) => {
 
 app.put('/persona/:id', async (req, res) => {
     try {
-        
+
 
 
     }
@@ -219,7 +258,7 @@ app.put('/persona/:id', async (req, res) => {
 
 app.delete('/persona/:id', async (req, res) => {
     try {
-        
+
 
 
     }
