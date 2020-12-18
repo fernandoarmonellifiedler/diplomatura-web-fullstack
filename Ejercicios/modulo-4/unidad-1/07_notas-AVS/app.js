@@ -8,7 +8,7 @@ app.use(express.json());
 app.use(express.urlencoded());
 
 
-const uri = "mongodb+srv://lorenaizzo:xAZMgnKmq6q8AeqC@feelings-o88nv.mongodb.net/recepedia?retryWrites=true&w=majority";
+const uri = "mongodb+srv://...";
 
 async function conectar() {
 try{
@@ -26,7 +26,7 @@ console.log(e);
 conectar();
 
 const CategoriaSchema = new mongoose.Schema({
-    nombre: String;
+    nombre: String
 });
 
 const CategoriaModel = mongoose.model("categoria", CategoriaModel)
