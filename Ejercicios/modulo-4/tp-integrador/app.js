@@ -41,7 +41,7 @@ app.get('/categoria', async (req, res) => {
 
         const respuesta = await utilQuery(query);
 
-        res.send({ "respuesta": respuesta });
+        res.status(200).send({ "respuesta": respuesta });
     }
     catch (e) {
         console.error(e.message);
@@ -59,7 +59,7 @@ app.get('/categoria/:id', async (req, res) => {
             throw new Error("Categoria no encontrada");
         }
 
-        res.send({ "respuesta": respuesta });
+        res.status(200).send({ "respuesta": respuesta });
     }
     catch (e) {
         console.error(e.message);
@@ -85,8 +85,8 @@ app.post('/categoria', async (req, res) => {
 
         query = 'INSERT INTO categoria (nombre_categoria) VALUES (?)';
         respuesta = await utilQuery(query, [nombre_categoria]);
-
-        res.status(200).send({ "respuesta": respuesta });
+        console.log(respuesta);
+        res.status(200).send({ "respuesta": respuesta.insertId, nombre_categoria });
     }
     catch (e) {
         console.error(e.message);
@@ -96,25 +96,15 @@ app.post('/categoria', async (req, res) => {
 
 app.delete('/categoria/:id', async (req, res) => {
     try {
-        // valida si categoria tiene nombre
-        if (req.params.nombre_categoria === undefined) {
-            throw new Error("No existe la categoria indicada");
-        }
+        /* falta:
+            - validar si la categoria existe o no
+            - validar si la categoria tiene datos asociados en la tabla LIBROS
+         */
 
-        let query = 'SELECT * FROM categoria WHERE id = ?';
+        let query = 'DELETE FROM categoria WHERE id = ?';
         let respuesta = await utilQuery(query, [req.params.id]);
-        /* Falta validar si existen libros asociados
-        let respuesta = await utilQuery(query, [req.params.id]);
-        console.log(respuesta, respuesta.length);
-        if (respuesta.length > 0) {
-            throw new Error("Aun existen datos asociados. No es posible borrar esta categoria");
-        }
-        */
 
-        query = 'DELETE FROM categoria WHERE id = ?';
-        respuesta = await utilQuery(query, [req.params.id]);
-
-        res.send({ "respuesta": respuesta });
+        res.status(200).send("La categoria se borro correctamente");
     }
     catch (e) {
         console.error(e.message);
