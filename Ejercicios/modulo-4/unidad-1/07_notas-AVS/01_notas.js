@@ -55,7 +55,7 @@ Dependiendo del caso, express va a mapear la info a un obj javascript
 
 - si hace falta trabajar con mongo, se genera la uri y luego se conecta */
 
-const uri = "mongodb+srv://lorenaizzo:xAZMgnKmq6q8AeqC@feelings-o88nv.mongodb.net/recepedia?retryWrites=true&w=majority";
+const uri = "mongodb+srv://...";
 
 async function conectar() {
 try{
