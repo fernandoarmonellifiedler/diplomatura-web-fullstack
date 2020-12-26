@@ -3,8 +3,10 @@
 - verificaciones:
     - que el usuario no envie los campos requeridos solo con espacios en blanco
     - guardar en mayusculas los campos alfanumericos y recordar hacer las verificaciones teniendo en cuenta esto.
+
 */
 
+/* ========== REQUIRES ========== */
 const express = require('express');
 const mysql = require('mysql');
 const util = require('util');
@@ -15,6 +17,7 @@ const port = 3000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+/* ========== MYSQL ========== */
 // Para trabajar con base de datos mysql
 const conexion = mysql.createConnection({
     host: 'localhost',
@@ -34,7 +37,14 @@ conexion.connect((error) => {
 // para trabajar con async/await en la conexion mysql
 const utilQuery = util.promisify(conexion.query).bind(conexion);
 
-/* ===== CATEGORIA ===== */
+/* ========== TODAS LAS PETICIONES AL SERVIDOR ========== */
+// Orden de las tablas de la base de datos:
+// - 1) Categoria
+// - 2) Libro
+// - 3) Persona
+
+/* ===== 1) CATEGORIA ===== */
+// GET para todas las categorias
 app.get('/categoria', async (req, res) => {
     try {
         const query = 'SELECT * FROM categoria';
@@ -48,7 +58,7 @@ app.get('/categoria', async (req, res) => {
         res.status(413).send({ "error": e.message })
     }
 });
-
+// GET para solo una categoria
 app.get('/categoria/:id', async (req, res) => {
     try {
         const query = 'SELECT * FROM categoria WHERE id = ?';
@@ -66,7 +76,7 @@ app.get('/categoria/:id', async (req, res) => {
         res.status(413).send({ "error": e.message })
     }
 });
-
+// POST para agregar una categoria
 app.post('/categoria', async (req, res) => {
     try {
         if (!req.body.nombre_categoria) {
@@ -93,7 +103,7 @@ app.post('/categoria', async (req, res) => {
         res.status(413).send({ "error": e.message })
     }
 });
-
+// DELETE una categoria
 app.delete('/categoria/:id', async (req, res) => {
     try {
         /* falta:
@@ -112,7 +122,8 @@ app.delete('/categoria/:id', async (req, res) => {
     }
 });
 
-/* ===== LIBRO ===== */
+/* ===== 2) LIBRO ===== */
+// GET todos los libros
 app.get('/libro', async (req, res) => {
     try {
 
@@ -124,7 +135,7 @@ app.get('/libro', async (req, res) => {
         res.status(413).send({ "error": e.message })
     }
 });
-
+// GET solo un libro
 app.get('/libro/:id', async (req, res) => {
     try {
 
@@ -136,7 +147,7 @@ app.get('/libro/:id', async (req, res) => {
         res.status(413).send({ "error": e.message })
     }
 });
-
+// POST libro
 app.post('/libro', async (req, res) => {
     try {
 
@@ -148,7 +159,7 @@ app.post('/libro', async (req, res) => {
         res.status(413).send({ "error": e.message })
     }
 });
-
+// PUT libro
 app.put('/libro/:id', async (req, res) => {
     try {
 
@@ -160,7 +171,7 @@ app.put('/libro/:id', async (req, res) => {
         res.status(413).send({ "error": e.message })
     }
 });
-
+// PUT libro prestar
 app.put('/libro/prestar/:id', async (req, res) => {
     try {
 
@@ -172,7 +183,7 @@ app.put('/libro/prestar/:id', async (req, res) => {
         res.status(413).send({ "error": e.message })
     }
 });
-
+// PUT libro devolver
 app.put('/libro/devolver/:id', async (req, res) => {
     try {
 
@@ -184,7 +195,7 @@ app.put('/libro/devolver/:id', async (req, res) => {
         res.status(413).send({ "error": e.message })
     }
 });
-
+// DELETE libro
 app.delete('/libro/:id', async (req, res) => {
     try {
 
@@ -197,7 +208,8 @@ app.delete('/libro/:id', async (req, res) => {
     }
 });
 
-/* ===== PERSONA ===== */
+/* ===== 3) PERSONA ===== */
+// GET personas
 app.get('/persona', async (req, res) => {
     try {
 
@@ -209,7 +221,7 @@ app.get('/persona', async (req, res) => {
         res.status(413).send({ "error": e.message })
     }
 });
-
+// GET una sola persona
 app.get('/persona/:id', async (req, res) => {
     try {
 
@@ -221,7 +233,7 @@ app.get('/persona/:id', async (req, res) => {
         res.status(413).send({ "error": e.message })
     }
 });
-
+// POST persona
 app.post('/persona', async (req, res) => {
     try {
 
@@ -233,7 +245,7 @@ app.post('/persona', async (req, res) => {
         res.status(413).send({ "error": e.message })
     }
 });
-
+// PUT persona
 app.put('/persona/:id', async (req, res) => {
     try {
 
@@ -245,7 +257,7 @@ app.put('/persona/:id', async (req, res) => {
         res.status(413).send({ "error": e.message })
     }
 });
-
+// DELETE persona
 app.delete('/persona/:id', async (req, res) => {
     try {
 
@@ -258,5 +270,5 @@ app.delete('/persona/:id', async (req, res) => {
     }
 });
 
-// Servidor
+/* ========== SERVIDOR ========== */
 app.listen(port, (req, res) => console.log("Server listening on port " + port));
