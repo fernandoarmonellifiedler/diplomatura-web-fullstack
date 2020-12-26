@@ -1,0 +1,34 @@
+Descripcion de la base de datos MySQL:
+- Para que funcione supongo que tendrán que crear una base de datos igual para hacer las verificaciones. Entonces les comento con cada print lo que hice hasta el momento.
+
+01) La base de datos se llama "mybooks" y tiene 3 tablas:
+    - categoria
+    - libro
+    - persona
+
+
+Estructura de cada tabla:
+
+02) Tabla "categoria" tiene solo dos filas:
+    - id
+    - nombre_categoria
+
+03) Tabla "libro":
+    - id
+    - nombre_libro
+    - descripcion
+    - categoria_id * --> se relaciona con la tabla 
+    - persona_prestamo *
+
+* estas ultimas dos filas son las que van a tener relacion con las otras tablas (como muestra imagen 05).
+
+04) Tabla "persona"
+    - id
+    - nombre
+    - apellido
+    - alias
+    - email
+
+05) Vista de relaciones de tabla "libro"
+    - una se llama "categoria-libro" que enlaza la "categoria_id" con la fila "id" de tabla categoria
+    - otra que se llama "persona-prestamo" que enlaza con la columna "persona_prestar" de la tabla "persona" en la columna "id" de la misma

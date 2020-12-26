@@ -22,7 +22,7 @@ Atención:
 
 
 
-El servidor debera responser a la siguiente documentacion de API: 
+El servidor debera responder a la siguiente documentacion de API: 
 
 ===== CATEGORIA =====
 
