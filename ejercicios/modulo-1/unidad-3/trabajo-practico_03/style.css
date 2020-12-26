@@ -1,0 +1,20 @@
+body {
+    background-color: #00ff00;
+    width: 1400px;
+}
+
+.container {
+    background-color: yellow;
+    width: 700px;
+    height: 700px;
+    margin: 75px auto 350px auto;
+}
+
+.material-icons {
+    color: red;
+    margin: 100px;
+}
+
+.material-icons.md-48 {
+    font-size: 500px;
+}

@@ -1,0 +1,24 @@
+<h2>Listado de artistas</h2>
+
+<a href="/artistas/add" class="btn btn-primary"> <i class="fa fa-plus"></i></a>
+
+<table>
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#each listado}}
+        <tr>
+            <td>{{this.nombre}}</td>
+            <td>
+                <a href="/artistas/{{this.id}}/edit"><i class="fa fa-edit"></i></a>
+                <a href="/artistas/{{this.id}}/delete"><i class="fa fa-trash"></i> </a>
+                <a href="/artistas/{{this.id}}/canciones">Ver canciones</a>
+            </td>
+        </tr>
+        {{/each}}
+    </tbody>
+</table>

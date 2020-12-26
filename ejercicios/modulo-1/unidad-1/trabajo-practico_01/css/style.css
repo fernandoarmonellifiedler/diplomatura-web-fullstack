@@ -1,0 +1,39 @@
+body {
+    background-color: aquamarine;
+}
+
+footer {
+    background-color: cadetblue;
+    text-align: center;
+    height: 50px;
+    margin-top: 15px;
+}
+
+.cuadrado {
+    width: 200px;
+    height: 200px;
+}
+
+#cuadrado-01 {
+    background-color: #FF0000;
+}
+
+#cuadrado-02 {
+    background-color: #FF0033;
+}
+
+#cuadrado-03 {
+    background-color: #FF0066;
+}
+
+#cuadrado-04 {
+    background-color: #FF0099;
+}
+
+#cuadrado-05 {
+    background-color: #FF00CC;
+}
+
+#cuadrado-06 {
+    background-color: #FF00FF;
+}
