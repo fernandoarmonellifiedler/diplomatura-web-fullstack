@@ -57,13 +57,13 @@ if (req.body.user == 'fer' && req.body.pass == "123") {
 
 /*- jwt.sign va a enviar el token (una palabra o frase de identificacion) y el tiempo que dura la sesion
 - probamos en postman (recordar que json puro va todo entre comillas a menos que sea numero)
-- recibimos: */
+- recibimos: 
 
 {
     "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJub21icmUiOiJsYWxhIiwiYXBlbGxpZG8iOiJsZWxlIiwiaWF0IjoxNjA5MDk5MTAwLCJleHAiOjE2MDkxODU1MDB9.a-Py_vEjfelzQsqXtl_mSZajxQ7MjXq0TT7NEJJeQro"
 }
 
-/*- este token es el que va a identificar al usuario. Por ejemplo, para un GET tendremos que verificar si reconocemos el token.
+- este token es el que va a identificar al usuario. Por ejemplo, para un GET tendremos que verificar si reconocemos el token.
 - ahora el token se envia en el encabezado del body con un nombre y si no lo encuentra manda un error*/
 
 app.get('/producto', (req, res) => {
