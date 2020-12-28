@@ -65,6 +65,7 @@ app.get('/categoria/:id', async (req, res) => {
 
         const respuesta = await utilQuery(query, [req.params.id]);
 
+        // // verifica si la categoria existe
         if (respuesta.length === 0) {
             throw new Error("Categoria no encontrada");
         }
@@ -79,24 +80,26 @@ app.get('/categoria/:id', async (req, res) => {
 // POST para agregar una categoria
 app.post('/categoria', async (req, res) => {
     try {
+        // verifica si se agregó un nombre
         if (!req.body.nombre_categoria) {
             throw new Error("Debes enviar un nombre para agregar una categoria!");
         }
 
-        const nombre_categoria = req.body.nombre_categoria.toUpperCase();
+        const nombreUpperCased = req.body.nombre_categoria.toUpperCase();
+        // verifica si el nombre ya existe
+        let query = 'SELECT nombre_categoria FROM categoria WHERE nombre_categoria = ?';
 
-        let query = 'SELECT id FROM categoria WHERE id = ?';
-
-        let respuesta = await utilQuery(query, [nombre_categoria]);
+        let respuesta = await utilQuery(query, nombreUpperCased);
 
         if (respuesta.length > 0) {
-            throw new Error("Ese nombre ya existe!");
+            throw new Error("Ese nombre ya existe!"); 
         }
-
+        // insert
         query = 'INSERT INTO categoria (nombre_categoria) VALUES (?)';
-        respuesta = await utilQuery(query, [nombre_categoria]);
-        console.log(respuesta);
-        res.status(200).send({ "respuesta": respuesta.insertId, nombre_categoria });
+
+        respuesta = await utilQuery(query, nombreUpperCased);
+
+        res.status(200).send({ "respuesta": respuesta.insertId, nombreUpperCased });
     }
     catch (e) {
         console.error(e.message);
@@ -106,13 +109,26 @@ app.post('/categoria', async (req, res) => {
 // DELETE una categoria
 app.delete('/categoria/:id', async (req, res) => {
     try {
-        /* falta:
-            - validar si la categoria existe o no
-            - validar si la categoria tiene datos asociados en la tabla LIBROS
-         */
+        // verifica si la categoria existe o no
+        let query = 'SELECT id FROM categoria WHERE id = ?';
 
-        let query = 'DELETE FROM categoria WHERE id = ?';
         let respuesta = await utilQuery(query, [req.params.id]);
+
+        if (respuesta.length == 0) {
+            throw new Error("Esa categoria no existe!"); 
+        }
+        // verifica si tiene libros asociados
+        query = 'SELECT categoria_id FROM libro WHERE categoria_id = ?'
+
+        respuesta = await utilQuery(query, [req.params.id]);
+
+        if (respuesta.length > 0) {
+            throw new Error("Esa categoria aún tiene libros asociados! No se puede eliminar"); 
+        }
+
+        // delete
+        query = 'DELETE FROM categoria WHERE id = ?';
+        respuesta = await utilQuery(query, [req.params.id]);
 
         res.status(200).send("La categoria se borro correctamente");
     }
@@ -150,9 +166,26 @@ app.get('/libro/:id', async (req, res) => {
 // POST libro
 app.post('/libro', async (req, res) => {
     try {
+        if (!req.body.nombre_libro) {
+            throw new Error("Debes enviar un nombre para agregar una libro!");
+        }
 
+        const nombreUpperCased = req.body.nombre_libro.toUpperCase();
 
+        let query = 'SELECT nombre_libro FROM libro WHERE nombre_libro = ?';
 
+        let respuesta = await utilQuery(query, nombreUpperCased);
+
+        if (respuesta.length > 0) {
+            throw new Error("Ese nombre ya existe!"); 
+        }
+        /* problemas para agregar un libro
+        query = 'INSERT INTO libro (nombre_libro, categoria_id) VALUES (?)';
+
+        respuesta = await utilQuery(query, nombreUpperCased, [req.body.categoria_id]);
+
+        res.status(200).send({ "respuesta": respuesta.insertId, nombreUpperCased });
+        */
     }
     catch (e) {
         console.error(e.message);
