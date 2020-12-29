@@ -179,10 +179,13 @@ app.post('/libro', async (req, res) => {
         if (respuesta.length > 0) {
             throw new Error("Ese nombre ya existe!"); 
         }
-        /* problemas para agregar un libro
-        query = 'INSERT INTO libro (nombre_libro, categoria_id) VALUES (?)';
+        /*problemas para agregar un libro
+        //query = 'INSERT INTO libro (id, nombre_libro, descripcion, categoria_id, persona_id) VALUES (?)';
+        query = 'INSERT INTO libro (nombre_libro, descripcion, categoria_id, persona_id) VALUES ([nombreUpperCased], [req.body.descripcion], [req.body.categoria_id], [req.body.persona_id])';
 
-        respuesta = await utilQuery(query, nombreUpperCased, [req.body.categoria_id]);
+        //respuesta = await utilQuery(query, [[nombreUpperCased], [req.body.descripcion], [req.body.categoria_id], [req.body.persona_id]]);
+
+        respuesta = await query;
 
         res.status(200).send({ "respuesta": respuesta.insertId, nombreUpperCased });
         */
