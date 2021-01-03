@@ -92,7 +92,7 @@ app.post('/categoria', async (req, res) => {
         let respuesta = await utilQuery(query, nombreUpperCased);
 
         if (respuesta.length > 0) {
-            throw new Error("Ese nombre ya existe!"); 
+            throw new Error("Ese nombre ya existe!");
         }
         // insert
         query = 'INSERT INTO categoria (nombre_categoria) VALUES (?)';
@@ -115,7 +115,7 @@ app.delete('/categoria/:id', async (req, res) => {
         let respuesta = await utilQuery(query, [req.params.id]);
 
         if (respuesta.length == 0) {
-            throw new Error("Esa categoria no existe!"); 
+            throw new Error("Esa categoria no existe!");
         }
         // verifica si tiene libros asociados
         query = 'SELECT categoria_id FROM libro WHERE categoria_id = ?'
@@ -123,7 +123,7 @@ app.delete('/categoria/:id', async (req, res) => {
         respuesta = await utilQuery(query, [req.params.id]);
 
         if (respuesta.length > 0) {
-            throw new Error("Esa categoria aún tiene libros asociados! No se puede eliminar"); 
+            throw new Error("Esa categoria aún tiene libros asociados! No se puede eliminar");
         }
 
         // delete
@@ -139,13 +139,17 @@ app.delete('/categoria/:id', async (req, res) => {
 });
 
 /* ===== 2) LIBRO ===== */
+// Solicitudes a libros agregado por https://github.com/crisank
 // GET todos los libros
 app.get('/libro', async (req, res) => {
     try {
+        const query = 'SELECT * FROM libro';
 
+        let respuesta = await utilQuery(query);
 
-
+        res.status(200).send({ "respuesta": respuesta });
     }
+
     catch (e) {
         console.error(e.message);
         res.status(413).send({ "error": e.message })
@@ -154,9 +158,10 @@ app.get('/libro', async (req, res) => {
 // GET solo un libro
 app.get('/libro/:id', async (req, res) => {
     try {
+        const query = 'SELECT * FROM libro WHERE id = ?';
 
-
-
+        let respuesta = await utilQuery(query, req.params.id);
+        res.status(200).send({ "respuesta": respuesta });
     }
     catch (e) {
         console.error(e.message);
@@ -166,29 +171,50 @@ app.get('/libro/:id', async (req, res) => {
 // POST libro
 app.post('/libro', async (req, res) => {
     try {
-        if (!req.body.nombre_libro) {
-            throw new Error("Debes enviar un nombre para agregar una libro!");
+        if (!req.body.nombre_libro || !req.body.categoria_id) {
+            throw new Error('Debe enviar correctamente los datos Nombre y Categoría del libro a ingresar');
         }
 
-        const nombreUpperCased = req.body.nombre_libro.toUpperCase();
+        const nombre_libro = req.body.nombre_libro.toUpperCase();
+        const descripcion = req.body.descripcion.toUpperCase();
+        const categoria_bd = req.body.categoria_id;
 
-        let query = 'SELECT nombre_libro FROM libro WHERE nombre_libro = ?';
 
-        let respuesta = await utilQuery(query, nombreUpperCased);
+        // Validación de libro en BD
+        let qy = 'SELECT * FROM libro WHERE nombre_libro = ?';
 
-        if (respuesta.length > 0) {
-            throw new Error("Ese nombre ya existe!"); 
+        let respuesta1 = await utilQuery(qy, [nombre_libro]);
+        console.log(respuesta1);
+
+        if (respuesta1.length > 0) {
+            throw new Error("Ese nombre de libro ya existe!");
         }
-        /*problemas para agregar un libro
-        //query = 'INSERT INTO libro (id, nombre_libro, descripcion, categoria_id, persona_id) VALUES (?)';
-        query = 'INSERT INTO libro (nombre_libro, descripcion, categoria_id, persona_id) VALUES ([nombreUpperCased], [req.body.descripcion], [req.body.categoria_id], [req.body.persona_id])';
 
-        //respuesta = await utilQuery(query, [[nombreUpperCased], [req.body.descripcion], [req.body.categoria_id], [req.body.persona_id]]);
 
-        respuesta = await query;
+        // VALIDA QUE NO SE INGRESEN ESPACIOS EN BLANCO EN NOMBRE
 
-        res.status(200).send({ "respuesta": respuesta.insertId, nombreUpperCased });
-        */
+        if (/^\s+$/.test(nombre_libro)) {
+            throw new Error("No es posible ingresar solo espacios en blanco en nombre libro");
+
+        }
+
+
+        // Validación de categoría para ingresar el libro
+
+        let query = 'SELECT * FROM libro WHERE categoria_id = ?';
+
+        let respuesta = await utilQuery(query, [categoria_bd]);
+
+        if (respuesta.length == 0) {
+            throw new Error("Ese categoría no existe!");
+        }
+
+
+        // Insertar registro en la BD
+        query = 'INSERT INTO libro (nombre_libro, descripcion, categoria_id, persona_prestamo) VALUES (?, ?, ?, ?)';
+        respuesta = await utilQuery(query, [nombre_libro, descripcion, categoria_bd, req.body.persona_prestamo]);
+
+        res.status(200).send({ "respuesta": respuesta.insertId, nombre_libro });
     }
     catch (e) {
         console.error(e.message);
@@ -198,9 +224,31 @@ app.post('/libro', async (req, res) => {
 // PUT libro
 app.put('/libro/:id', async (req, res) => {
     try {
-
-
-
+        // Validación de datos ingresados
+ 
+        if (!req.body.nombre_libro) {
+            throw new Error("No enviaste el nombre del libro");
+        }
+        
+        let query = 'SELECT * FROM libro WHERE nombre_libro = ? AND id <> ?';
+ 
+        let respuesta = await utilQuery(query, [req.body.nombre_libro, req.params.id]);
+ 
+        if (respuesta.length > 0) {
+            throw new Error("El nombre del libro que queres poner ahora ya existe");
+        }
+ 
+        // Se realiza la actualización de la base de datos
+        query = 'UPDATE libro SET nombre_libro = ?, descripcion = ? WHERE id = ?';
+ 
+        respuesta = await utilQuery(query, [req.body.nombre_libro.toUpperCase(), req.body.descripcion.toUpperCase(), req.params.id]);
+ 
+        
+        // Se realiza la consulta nuevamente para mostrar datos
+        const consulta = 'SELECT * FROM libro WHERE id = ?';
+ 
+        let respuesta1 = await utilQuery(consulta, req.params.id);
+        res.status(200).send({ "respuesta": respuesta1 });
     }
     catch (e) {
         console.error(e.message);
