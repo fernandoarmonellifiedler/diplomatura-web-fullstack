@@ -181,6 +181,7 @@ app.post('/libro', async (req, res) => {
         const descripcion = req.body.descripcion.toUpperCase();
         const categoria_bd = req.body.categoria_id;
         console.log(categoria_bd)
+        const persona = req.body.persona_prestamo;
 
         // Validación de libro en BD
         // no puedo validar porque no reconoce categoria
@@ -234,24 +235,24 @@ app.put('/libro/:id', async (req, res) => {
         if (!req.body.nombre_libro) {
             throw new Error("No enviaste el nombre del libro");
         }
-        
+
         let query = 'SELECT * FROM libro WHERE nombre_libro = ? AND id <> ?';
- 
+
         let respuesta = await utilQuery(query, [req.body.nombre_libro, req.params.id]);
         // validacion ok
         if (respuesta.length > 0) {
             throw new Error("El nombre del libro que queres poner ahora ya existe");
         }
- 
+
         // Se realiza la actualización de la base de datos
         query = 'UPDATE libro SET nombre_libro = ?, descripcion = ? WHERE id = ?';
- 
+
         respuesta = await utilQuery(query, [req.body.nombre_libro.toUpperCase(), req.body.descripcion.toUpperCase(), req.params.id]);
- 
-        
+
+
         // Se realiza la consulta nuevamente para mostrar datos
         const consulta = 'SELECT * FROM libro WHERE id = ?';
- 
+
         let respuesta1 = await utilQuery(consulta, req.params.id);
         res.status(200).send({ "respuesta": respuesta1 });
     }
@@ -264,8 +265,47 @@ app.put('/libro/:id', async (req, res) => {
 app.put('/libro/prestar/:id', async (req, res) => {
     try {
 
+        // Verificación de datos ingresados: ID libro y Id persona a prestar
+        if (!req.body.persona_prestamo || !req.params.id) {
+            throw new Error("Es necesario que se ingresen correctamente el ID de la persona a prestar y el ID del libro");
+        }
 
+        // Verificación de que el libro exista
 
+        let qy = 'SELECT * FROM libro WHERE id = ?';
+
+        let respuesta1 = await utilQuery(qy, [req.params.id]);
+
+        if (respuesta1.length == 0) {
+            throw new Error("Ese libro ingresado NO existe!");
+        }
+
+        // Verificación de que el USUARIO exista en la BD
+
+        let consulta_usuario = 'SELECT * FROM persona WHERE id = ?';
+
+        let respuesta = await utilQuery(consulta_usuario, [req.params.id, req.body.persona_prestamo]);
+
+        if (respuesta.length == 0) {
+            throw new Error("Ese usuario ingresado NO existe!");
+        }
+
+        // Verificación que el libro NO ESTE PRESTADO;
+
+        let consulta_libro = 'SELECT * FROM libro WHERE id = ? AND persona_prestamo <> null';
+        let respuesta_libro = await utilQuery(consulta_libro, [req.body.persona_prestamo]);
+
+        if (!respuesta_libro) {
+            throw new Error("Ese libro ya ha sido prestado");
+        }
+
+        // Se realiza la actualización de la base de datos
+        query = 'UPDATE libro SET persona_prestamo = ? WHERE id = ?';
+
+        respuesta2 = await utilQuery(query, [req.body.persona_prestamo, req.params.id]);
+
+        // MENSAJE DE ACCIÓN DE MODIFICACION CON PUT CONCRETADO 
+        res.status(200).send("El libro se prestó correctamente");
     }
     catch (e) {
         console.error(e.message);
@@ -276,8 +316,34 @@ app.put('/libro/prestar/:id', async (req, res) => {
 app.put('/libro/devolver/:id', async (req, res) => {
     try {
 
+        // Verificación de datos ingresados: ID libro y nombre libro
+        if (!req.body.nombre_libro || !req.params.id) {
+            throw new Error("Es necesario que se ingresen correctamente el nombre del libro a devolver y el ID del libro");
+        }
 
+        //Validación de que los datos del libro sean correctos
 
+        let query = 'SELECT * FROM libro WHERE nombre_libro = ? AND id = ?';
+
+        let respuesta = await utilQuery(query, [req.body.nombre_libro, req.params.id]);
+
+        if (respuesta.length == 0) {
+            throw new Error("Ese libro NO existe");
+        }
+
+        /*/Valido si ese libro estaba prestado
+        
+        if(req.persona_prestamo != null) {
+            throw new Error("Ese libro no estaba prestado")
+        }*/
+
+        // Se realiza la actualización de la base de datos
+        qy = 'UPDATE libro SET persona_prestamo = null WHERE id = ?';
+
+        respuesta2 = await utilQuery(qy, [req.params.id]);
+
+        // MENSAJE DE ACCIÓN DE MODIFICACION CON PUT CONCRETADO 
+        res.status(200).send("El libro se devolvió correctamente");
     }
     catch (e) {
         console.error(e.message);
@@ -287,9 +353,24 @@ app.put('/libro/devolver/:id', async (req, res) => {
 // DELETE libro
 app.delete('/libro/:id', async (req, res) => {
     try {
+        //Validación de que los datos del libro sean correctos
 
+        let query = 'SELECT * FROM libro WHERE id = ?';
 
+        let respuesta = await utilQuery(query, [req.params.id]);
 
+        if (respuesta.length == 0) {
+            throw new Error("Ese libro NO existe");
+        }
+        //Valido si ese libro estaba prestado
+
+        if (req.persona_prestamo != null) {
+            throw new Error("Ese libro no estaba prestado")
+        }
+        // Se realiza la actualización de la base de datos
+        qy = 'DELETE FROM libro WHERE id = ?';
+
+        respuesta2 = await utilQuery(qy, [req.params.id]);
     }
     catch (e) {
         console.error(e.message);
