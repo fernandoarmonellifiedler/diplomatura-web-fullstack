@@ -1,9 +1,29 @@
 /* Falta:
-- todos los try de las peticiones
+- todos los try de PERSONA
+
 - verificaciones:
     - que el usuario no envie los campos requeridos solo con espacios en blanco
     - guardar en mayusculas los campos alfanumericos y recordar hacer las verificaciones teniendo en cuenta esto.
 
+estado de la app (validaciones y testeo):
+- CATEGORIA:
+    - GET: OK
+    - GET + id: OK
+    - POST: OK
+    - DELETE: OK
+- LIBRO:
+    - GET: OK
+    - GET + id: OK
+    - POST:
+        - falta validar que exista la persona si se agrega un libro ya prestado. 
+        - falta validar que funcione ok si la persona existe 
+    - PUT:
+    - DELETE: 
+- PERSONA:
+    - GET: 
+    - GET + id: 
+    - POST: 
+    - DELETE: 
 */
 
 /* ========== REQUIRES ========== */
@@ -37,7 +57,7 @@ conexion.connect((error) => {
 // para trabajar con async/await en la conexion mysql
 const utilQuery = util.promisify(conexion.query).bind(conexion);
 
-/* ========== TODAS LAS PETICIONES AL SERVIDOR ========== */
+/* ========== DOCUMENTACION API ========== */
 // Orden de las tablas de la base de datos:
 // - 1) Categoria
 // - 2) Libro
@@ -55,7 +75,7 @@ app.get('/categoria', async (req, res) => {
     }
     catch (e) {
         console.error(e.message);
-        res.status(413).send({ "error": e.message })
+        res.status(413).send({ "mensaje": e.message })
     }
 });
 // GET para solo una categoria
@@ -65,7 +85,7 @@ app.get('/categoria/:id', async (req, res) => {
 
         const respuesta = await utilQuery(query, [req.params.id]);
 
-        // // verifica si la categoria existe
+        // verifica si la categoria existe
         if (respuesta.length === 0) {
             throw new Error("Categoria no encontrada");
         }
@@ -74,7 +94,7 @@ app.get('/categoria/:id', async (req, res) => {
     }
     catch (e) {
         console.error(e.message);
-        res.status(413).send({ "error": e.message })
+        res.status(413).send({ "mensaje": e.message })
     }
 });
 // POST para agregar una categoria
@@ -85,6 +105,10 @@ app.post('/categoria', async (req, res) => {
             throw new Error("Debes enviar un nombre para agregar una categoria!");
         }
 
+        // valida que no se ingrese un nombre en blanco
+        if (/^\s+$/.test(req.body.nombre_categoria)) {
+            throw new Error("No es posible ingresar solo espacios en blanco en el nombre de la categoria");
+        }
         const nombreUpperCased = req.body.nombre_categoria.toUpperCase();
         // verifica si el nombre ya existe
         let query = 'SELECT nombre_categoria FROM categoria WHERE nombre_categoria = ?';
@@ -92,18 +116,18 @@ app.post('/categoria', async (req, res) => {
         let respuesta = await utilQuery(query, nombreUpperCased);
 
         if (respuesta.length > 0) {
-            throw new Error("Ese nombre ya existe!");
+            throw new Error("Ese nombre de categoria ya existe!");
         }
         // insert
         query = 'INSERT INTO categoria (nombre_categoria) VALUES (?)';
 
         respuesta = await utilQuery(query, nombreUpperCased);
 
-        res.status(200).send({ "respuesta": respuesta.insertId, nombreUpperCased });
+        res.status(200).send({ "respuesta": respuesta.insertId, "nombre": nombreUpperCased });
     }
     catch (e) {
         console.error(e.message);
-        res.status(413).send({ "error": e.message })
+        res.status(413).send({ "mensaje": e.message })
     }
 });
 // DELETE una categoria
@@ -115,7 +139,7 @@ app.delete('/categoria/:id', async (req, res) => {
         let respuesta = await utilQuery(query, [req.params.id]);
 
         if (respuesta.length == 0) {
-            throw new Error("Esa categoria no existe!");
+            throw new Error("No existe la categoria indicada");
         }
         // verifica si tiene libros asociados
         query = 'SELECT categoria_id FROM libro WHERE categoria_id = ?'
@@ -134,7 +158,7 @@ app.delete('/categoria/:id', async (req, res) => {
     }
     catch (e) {
         console.error(e.message);
-        res.status(413).send({ "error": e.message })
+        res.status(413).send({ "mensaje": e.message })
     }
 });
 
@@ -152,79 +176,97 @@ app.get('/libro', async (req, res) => {
 
     catch (e) {
         console.error(e.message);
-        res.status(413).send({ "error": e.message })
+        res.status(413).send({ "mensaje": e.message })
     }
 });
 // GET solo un libro
-// falta validar si el libro se encuentra en la bd
 app.get('/libro/:id', async (req, res) => {
     try {
         const query = 'SELECT * FROM libro WHERE id = ?';
 
         let respuesta = await utilQuery(query, req.params.id);
+
+        // verifica si el libro existe
+        if (respuesta.length === 0) {
+            throw new Error("No se encuentra ese libro");
+        }
+
         res.status(200).send({ "respuesta": respuesta });
     }
     catch (e) {
         console.error(e.message);
-        res.status(413).send({ "error": e.message })
+        res.status(413).send({ "mensaje": e.message })
     }
 });
 // POST libro
 app.post('/libro', async (req, res) => {
     try {
-        // validacion ok pero segun consigna deben recibirse todos los datos (nombre, categoria, descripcion, persona_id)
+        // valida datos obligatorios (nombre_libro, categoria_id)
         if (!req.body.nombre_libro || !req.body.categoria_id) {
-            throw new Error('Debe enviar correctamente los datos Nombre y Categoría del libro a ingresar');
+            throw new Error("Nombre y categoria son datos obligatorios!");
         }
-        // verificar: Si no se coloca "descripcion" da este error: "Cannot read property 'toUpperCase' of undefined". 
+        // si no hay descripción en el body agrega una string vacia
+        if (!req.body.descripcion) {
+            req.body.descripcion = "";
+        }
+
+        /* no esta funcionando
+        // si se ingresa un id en "persona_id" que no sea null valida que exista la persona
+        if (req.body.persona_id && req.body.persona_id != null) {
+            let qy = 'SELECT * FROM persona WHERE id = ?';
+
+            let respuesta1 = await utilQuery(qy, [req.body.persona_id]);
+
+            if (respuesta1.length == 0) {
+            throw new Error("No existe la persona indicada!");
+            }
+        }
+        */
+
+        // si no se agrega el campo "persona_id" se le da el valor de null
+        if (!req.body.persona_id) {
+            req.body.persona_id = null;
+        }
+         
         const nombre_libro = req.body.nombre_libro.toUpperCase();
         const descripcion = req.body.descripcion.toUpperCase();
         const categoria_bd = req.body.categoria_id;
-        console.log(categoria_bd)
-        const persona = req.body.persona_prestamo;
+        const persona = req.body.persona_id;
 
-        // Validación de libro en BD
-        // no puedo validar porque no reconoce categoria
-        let qy = 'SELECT * FROM libro WHERE nombre_libro = ?';
+        // Valida libro en BD
+        let query = 'SELECT * FROM libro WHERE nombre_libro = ?';
 
-        let respuesta1 = await utilQuery(qy, [nombre_libro]);
-        console.log(respuesta1);
+        let respuesta = await utilQuery(query, [nombre_libro]);
 
-        if (respuesta1.length > 0) {
+        if (respuesta.length > 0) {
             throw new Error("Ese nombre de libro ya existe!");
         }
 
-
-        // VALIDA QUE NO SE INGRESEN ESPACIOS EN BLANCO EN NOMBRE
-        // validacion ok
+        // valida que no se ingrese un nombre en blanco
         if (/^\s+$/.test(nombre_libro)) {
-            throw new Error("No es posible ingresar solo espacios en blanco en nombre libro");
-
+            throw new Error("No es posible ingresar solo espacios en blanco en el nombre del libro");
         }
 
+        // Valida que exista la categoria
+        query = 'SELECT * FROM categoria WHERE id = ?';
 
-        // Validación de categoría para ingresar el libro
-        // error: agrego una categoria existente y no la reconoce
-        //let query = 'SELECT * FROM libro WHERE categoria_id = ?';
-        let query = 'SELECT * FROM categoria WHERE id = ?';
-
-        let respuesta = await utilQuery(query, [categoria_bd]);
+        respuesta = await utilQuery(query, [categoria_bd]);
 
         if (respuesta.length == 0) {
-            throw new Error("Ese categoría no existe!");
+            throw new Error("No existe la categoria indicada!");
         }
 
+        
 
         // Insertar registro en la BD
-        // cambiar "persona_prestamo" por "persona_id"
         query = 'INSERT INTO libro (nombre_libro, descripcion, categoria_id, persona_id) VALUES (?, ?, ?, ?)';
-        respuesta = await utilQuery(query, [nombre_libro, descripcion, categoria_bd, req.body.persona_id]);
+        respuesta = await utilQuery(query, [nombre_libro, descripcion, categoria_bd, persona]);
 
         res.status(200).send({ "respuesta": respuesta.insertId, nombre_libro });
     }
     catch (e) {
         console.error(e.message);
-        res.status(413).send({ "error": e.message })
+        res.status(413).send({ "mensaje": e.message })
     }
 });
 // PUT libro
@@ -258,7 +300,7 @@ app.put('/libro/:id', async (req, res) => {
     }
     catch (e) {
         console.error(e.message);
-        res.status(413).send({ "error": e.message })
+        res.status(413).send({ "mensaje": e.message })
     }
 });
 // PUT libro prestar
@@ -309,7 +351,7 @@ app.put('/libro/prestar/:id', async (req, res) => {
     }
     catch (e) {
         console.error(e.message);
-        res.status(413).send({ "error": e.message })
+        res.status(413).send({ "mensaje": e.message })
     }
 });
 // PUT libro devolver
@@ -347,7 +389,7 @@ app.put('/libro/devolver/:id', async (req, res) => {
     }
     catch (e) {
         console.error(e.message);
-        res.status(413).send({ "error": e.message })
+        res.status(413).send({ "mensaje": e.message })
     }
 });
 // DELETE libro
@@ -374,7 +416,7 @@ app.delete('/libro/:id', async (req, res) => {
     }
     catch (e) {
         console.error(e.message);
-        res.status(413).send({ "error": e.message })
+        res.status(413).send({ "mensaje": e.message })
     }
 });
 
@@ -388,7 +430,7 @@ app.get('/persona', async (req, res) => {
     }
     catch (e) {
         console.error(e.message);
-        res.status(413).send({ "error": e.message })
+        res.status(413).send({ "mensaje": e.message })
     }
 });
 // GET una sola persona
@@ -400,7 +442,7 @@ app.get('/persona/:id', async (req, res) => {
     }
     catch (e) {
         console.error(e.message);
-        res.status(413).send({ "error": e.message })
+        res.status(413).send({ "mensaje": e.message })
     }
 });
 // POST persona
@@ -412,7 +454,7 @@ app.post('/persona', async (req, res) => {
     }
     catch (e) {
         console.error(e.message);
-        res.status(413).send({ "error": e.message })
+        res.status(413).send({ "mensaje": e.message })
     }
 });
 // PUT persona
@@ -424,7 +466,7 @@ app.put('/persona/:id', async (req, res) => {
     }
     catch (e) {
         console.error(e.message);
-        res.status(413).send({ "error": e.message })
+        res.status(413).send({ "mensaje": e.message })
     }
 });
 // DELETE persona
@@ -436,7 +478,7 @@ app.delete('/persona/:id', async (req, res) => {
     }
     catch (e) {
         console.error(e.message);
-        res.status(413).send({ "error": e.message })
+        res.status(413).send({ "mensaje": e.message })
     }
 });
 
