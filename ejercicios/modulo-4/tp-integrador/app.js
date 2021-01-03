@@ -156,6 +156,7 @@ app.get('/libro', async (req, res) => {
     }
 });
 // GET solo un libro
+// falta validar si el libro se encuentra en la bd
 app.get('/libro/:id', async (req, res) => {
     try {
         const query = 'SELECT * FROM libro WHERE id = ?';
@@ -171,16 +172,18 @@ app.get('/libro/:id', async (req, res) => {
 // POST libro
 app.post('/libro', async (req, res) => {
     try {
+        // validacion ok pero segun consigna deben recibirse todos los datos (nombre, categoria, descripcion, persona_id)
         if (!req.body.nombre_libro || !req.body.categoria_id) {
             throw new Error('Debe enviar correctamente los datos Nombre y Categoría del libro a ingresar');
         }
-
+        // verificar: Si no se coloca "descripcion" da este error: "Cannot read property 'toUpperCase' of undefined". 
         const nombre_libro = req.body.nombre_libro.toUpperCase();
         const descripcion = req.body.descripcion.toUpperCase();
         const categoria_bd = req.body.categoria_id;
-
+        console.log(categoria_bd)
 
         // Validación de libro en BD
+        // no puedo validar porque no reconoce categoria
         let qy = 'SELECT * FROM libro WHERE nombre_libro = ?';
 
         let respuesta1 = await utilQuery(qy, [nombre_libro]);
@@ -192,7 +195,7 @@ app.post('/libro', async (req, res) => {
 
 
         // VALIDA QUE NO SE INGRESEN ESPACIOS EN BLANCO EN NOMBRE
-
+        // validacion ok
         if (/^\s+$/.test(nombre_libro)) {
             throw new Error("No es posible ingresar solo espacios en blanco en nombre libro");
 
@@ -200,8 +203,9 @@ app.post('/libro', async (req, res) => {
 
 
         // Validación de categoría para ingresar el libro
-
-        let query = 'SELECT * FROM libro WHERE categoria_id = ?';
+        // error: agrego una categoria existente y no la reconoce
+        //let query = 'SELECT * FROM libro WHERE categoria_id = ?';
+        let query = 'SELECT * FROM categoria WHERE id = ?';
 
         let respuesta = await utilQuery(query, [categoria_bd]);
 
@@ -211,8 +215,9 @@ app.post('/libro', async (req, res) => {
 
 
         // Insertar registro en la BD
-        query = 'INSERT INTO libro (nombre_libro, descripcion, categoria_id, persona_prestamo) VALUES (?, ?, ?, ?)';
-        respuesta = await utilQuery(query, [nombre_libro, descripcion, categoria_bd, req.body.persona_prestamo]);
+        // cambiar "persona_prestamo" por "persona_id"
+        query = 'INSERT INTO libro (nombre_libro, descripcion, categoria_id, persona_id) VALUES (?, ?, ?, ?)';
+        respuesta = await utilQuery(query, [nombre_libro, descripcion, categoria_bd, req.body.persona_id]);
 
         res.status(200).send({ "respuesta": respuesta.insertId, nombre_libro });
     }
@@ -225,7 +230,7 @@ app.post('/libro', async (req, res) => {
 app.put('/libro/:id', async (req, res) => {
     try {
         // Validación de datos ingresados
- 
+        // validacion ok
         if (!req.body.nombre_libro) {
             throw new Error("No enviaste el nombre del libro");
         }
@@ -233,7 +238,7 @@ app.put('/libro/:id', async (req, res) => {
         let query = 'SELECT * FROM libro WHERE nombre_libro = ? AND id <> ?';
  
         let respuesta = await utilQuery(query, [req.body.nombre_libro, req.params.id]);
- 
+        // validacion ok
         if (respuesta.length > 0) {
             throw new Error("El nombre del libro que queres poner ahora ya existe");
         }

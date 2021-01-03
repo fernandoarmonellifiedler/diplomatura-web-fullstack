@@ -81,7 +81,7 @@ recibe:
     {nombre:string,descripcion:string, categoria_id:numero, persona_id:numero/null}
 
 devuelve:
-    status 200 y {id: numero, nombre:string, descripcion:string, categoria_id:numero, persona_id:numero/null} o bien 
+    status 200 y {id: numero, nombre:string, descripcion:string, categoria_id:numero, persona_id:numero/null}
     
     status 413,{mensaje: <descripcion del error>} que puede ser "error inesperado", "ese libro ya existe", "nombre y categoria son datos obligatorios", "no existe la categoria indicada", "no existe la persona indicada"
 
@@ -92,7 +92,7 @@ recibe:
 devuelve:
     status 200 y {id: numero, nombre:string, descripcion:string, categoria_id:numero, persona_id:numero/null} modificado
     
-    413, {mensaje: <descripcion del error>} "error inesperado",  "solo se puede modificar la descripcion del libro
+    413, {mensaje: <descripcion del error>} "error inesperado",  "solo se puede modificar la descripcion del libro"
 
 PUT '/libro/prestar/:id':
 recibe: {id:numero, persona_id:numero}
