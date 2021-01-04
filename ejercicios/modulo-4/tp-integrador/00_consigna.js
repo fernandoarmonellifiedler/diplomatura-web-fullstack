@@ -106,16 +106,43 @@ devuelve:
 
 
 ===== PERSONA =====
+GET '/persona'
+retorna:
+    status 200 y [{id: numerico, nombre: string, apellido: string, alias: string, email; string}]
+    
+    status 413 y []
 
-POST '/persona' recibe: {nombre: string, apellido: string, alias: string, email: string} retorna: status: 200, {id: numerico, nombre: string, apellido: string, alias: string, email: string} - status: 413, {mensaje: <descripcion del error>} que puede ser: "faltan datos", "el email ya se encuentra registrado", "error inesperado"
+GET '/persona/:id'
+retorna:
+    status 200 y {id: numerico, nombre: string, apellido: string, alias: string, email; string}
+    
+    status 413 , {mensaje: <descripcion del error>} "error inesperado", "no se encuentra esa persona"
 
-GET '/persona' retorna status 200 y [{id: numerico, nombre: string, apellido: string, alias: string, email; string}] o bien status 413 y []
+POST '/persona'
+recibe: 
+    {nombre: string, apellido: string, alias: string, email: string}
 
-GET '/persona/:id' retorna status 200 y {id: numerico, nombre: string, apellido: string, alias: string, email; string} - status 413 , {mensaje: <descripcion del error>} "error inesperado", "no se encuentra esa persona"
+retorna:
+    status: 200, {id: numerico, nombre: string, apellido: string, alias: string, email: string}
+    
+    status: 413, {mensaje: <descripcion del error>} que puede ser: "faltan datos", "el email ya se encuentra registrado", "error inesperado"
 
-PUT '/persona/:id' recibe: {nombre: string, apellido: string, alias: string, email: string} el email no se puede modificar. retorna status 200 y el objeto modificado o bien status 413, {mensaje: <descripcion del error>} "error inesperado", "no se encuentra esa persona"
+PUT '/persona/:id'
+recibe:
+    {nombre: string, apellido: string, alias: string, email: string} el email no se puede modificar.
 
-DELETE '/persona/:id' retorna: 200 y {mensaje: "se borro correctamente"} o bien 413, {mensaje: <descripcion del error>} "error inesperado", "no existe esa persona", "esa persona tiene libros asociados, no se puede eliminar"
+retorna:
+    status 200 y el objeto modificado
+    
+    status 413, {mensaje: <descripcion del error>} "error inesperado", "no se encuentra esa persona"
+
+DELETE '/persona/:id'
+retorna:
+    200 y {mensaje: "se borro correctamente"}
+    
+    413, {mensaje: <descripcion del error>} "error inesperado", "no existe esa persona", "esa persona tiene libros asociados, no se puede eliminar"
+
+
 ----------------------------------------------
 
 Sobre presentación del trabajo:
