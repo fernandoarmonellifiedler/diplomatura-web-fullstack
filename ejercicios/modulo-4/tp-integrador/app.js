@@ -1,23 +1,23 @@
 /* 
 estado de la app (validaciones y testeo):
 - CATEGORIA:
-    - GET: OK
-    - GET + id: OK
-    - POST: OK
-    - DELETE: OK
+    - GET: 
+    - GET + id: 
+    - POST: 
+    - DELETE: 
 
 - LIBRO:
-    - GET: OK
-    - GET + id: OK
-    - POST: OK
-    - PUT: OK
-    - DELETE: OK
+    - GET:
+    - GET + id:
+    - POST:
+    - PUT:
+    - DELETE:
     
 - PERSONA:
-    - GET: OK
-    - GET + id: OK
-    - POST: OK
-    - DELETE: OK
+    - GET:
+    - GET + id:
+    - POST:
+    - DELETE:
 */
 
 /* ========== REQUIRES ========== */
@@ -37,7 +37,7 @@ const conexion = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: '',
-    database: 'mybooks'
+    database: 'mybs'
 });
 
 conexion.connect((error) => {
