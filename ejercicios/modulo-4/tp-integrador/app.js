@@ -157,7 +157,6 @@ app.delete('/categoria/:id', async (req, res) => {
 });
 
 /* ===== 2) LIBRO ===== */
-// Solicitudes HTTP a /libro: Andrea Kruzolek (https://github.com/crisank) 
 // GET todos los libros
 app.get('/libro', async (req, res) => {
     try {
