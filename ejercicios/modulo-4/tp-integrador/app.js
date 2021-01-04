@@ -1,10 +1,4 @@
-/* Falta:
-- todos los try de PERSONA
-
-- verificaciones:
-    - que el usuario no envie los campos requeridos solo con espacios en blanco
-    - guardar en mayusculas los campos alfanumericos y recordar hacer las verificaciones teniendo en cuenta esto.
-
+/* 
 estado de la app (validaciones y testeo):
 - CATEGORIA:
     - GET: OK
@@ -17,8 +11,7 @@ estado de la app (validaciones y testeo):
     - GET + id: OK
     - POST: OK
     - PUT: OK
-        - falta verifica prestar y devolver
-    - DELETE: verificar
+    - DELETE: OK
     
 - PERSONA:
     - GET: OK
@@ -55,11 +48,9 @@ conexion.connect((error) => {
     console.log('Conexion con base de datos mysql establecida');
 });
 
-// para trabajar con async/await en la conexion mysql
 const utilQuery = util.promisify(conexion.query).bind(conexion);
 
 /* ========== DOCUMENTACION API ========== */
-// Orden de las tablas de la base de datos:
 // - 1) Categoria
 // - 2) Libro
 // - 3) Persona
@@ -120,7 +111,8 @@ app.post('/categoria', async (req, res) => {
         if (respuesta.length > 0) {
             throw new Error("Ese nombre de categoria ya existe!");
         }
-        // insert
+
+        // ingresa categoria a la BD
         query = 'INSERT INTO categoria (nombre_categoria) VALUES (?)';
 
         respuesta = await utilQuery(query, nombreUpperCased);
@@ -165,7 +157,7 @@ app.delete('/categoria/:id', async (req, res) => {
 });
 
 /* ===== 2) LIBRO ===== */
-// Solicitudes a libros agregado por https://github.com/crisank
+// Solicitudes HTTP a /libro: Andrea Kruzolek (https://github.com/crisank) 
 // GET todos los libros
 app.get('/libro', async (req, res) => {
     try {
@@ -227,7 +219,7 @@ app.post('/libro', async (req, res) => {
             throw new Error("No existe la categoria indicada!");
         }
 
-        // valida si el valor del campo "persona_id" referencia a una persona existente
+        // valida si el valor del campo "persona_id" hace referencia a una persona existente
         if (req.body.persona_id > 0) {
             query = 'SELECT id FROM persona WHERE id = ?';
 
@@ -243,13 +235,13 @@ app.post('/libro', async (req, res) => {
             req.body.persona_id = null;
         };
 
-        // const 
+        // declara variables
         const nombre_libro = req.body.nombre_libro.toUpperCase();
         const descripcion = req.body.descripcion.toUpperCase()
         const categoria_bd = req.body.categoria_id;
         const persona = req.body.persona_id;
 
-        // Valida libro en BD
+        // valida que exista el libro indicado
         query = 'SELECT * FROM libro WHERE nombre_libro = ?';
 
         respuesta = await utilQuery(query, [nombre_libro]);
@@ -258,7 +250,7 @@ app.post('/libro', async (req, res) => {
             throw new Error("Ese nombre de libro ya existe!");
         }
 
-        // Insertar registro en la BD
+        // Insertar libro en la BD
         query = 'INSERT INTO libro (nombre_libro, descripcion, categoria_id, persona_id) VALUES (?, ?, ?, ?)';
         respuesta = await utilQuery(query, [nombre_libro, descripcion, categoria_bd, persona]);
 
@@ -314,7 +306,7 @@ app.put('/libro/:id', async (req, res) => {
             throw new Error("El valor de 'persona_id' no coincide con la del ID proporcionado. Para alterar este valor direccione la petición a '/libro/prestar/:id' o '/libro/devolver/:id'.");
         }
         
-        // const 
+        // declara variables
         const nombre_libro = req.body.nombre_libro.toUpperCase();
         const descripcion = req.body.descripcion.toUpperCase()
         const categoria_bd = req.body.categoria_id;
@@ -329,7 +321,7 @@ app.put('/libro/:id', async (req, res) => {
             throw new Error("El nombre de libro no coincide con el del ID proporcionado. No es posible alterar el nombre del libro, solo su descripción");
         }
 
-        // Se realiza la actualización de la base de datos
+        // update de la BD
         query = 'UPDATE libro SET descripcion = ? WHERE id = ?';
 
         respuesta = await utilQuery(query, [descripcion, req.params.id]);
@@ -344,47 +336,43 @@ app.put('/libro/:id', async (req, res) => {
 // PUT libro prestar
 app.put('/libro/prestar/:id', async (req, res) => {
     try {
-
         // Verificación de datos ingresados: ID libro y Id persona a prestar
-        if (!req.body.persona_prestamo || !req.params.id) {
+        if (!req.body.persona_id || !req.params.id) {
             throw new Error("Es necesario que se ingresen correctamente el ID de la persona a prestar y el ID del libro");
         }
 
-        // Verificación de que el libro exista
+        // Verifica que el libro exista
+        let query = 'SELECT * FROM libro WHERE id = ?';
 
-        let qy = 'SELECT * FROM libro WHERE id = ?';
-
-        let respuesta1 = await utilQuery(qy, [req.params.id]);
-
-        if (respuesta1.length == 0) {
-            throw new Error("Ese libro ingresado NO existe!");
-        }
-
-        // Verificación de que el USUARIO exista en la BD
-
-        let consulta_usuario = 'SELECT * FROM persona WHERE id = ?';
-
-        let respuesta = await utilQuery(consulta_usuario, [req.params.id, req.body.persona_prestamo]);
+        let respuesta = await utilQuery(query, [req.params.id]);
 
         if (respuesta.length == 0) {
-            throw new Error("Ese usuario ingresado NO existe!");
+            throw new Error("No se encontro el libro");
         }
 
-        // Verificación que el libro NO ESTE PRESTADO;
+        // Verifica que el USUARIO exista
+        query = 'SELECT * FROM persona WHERE id = ?';
 
-        let consulta_libro = 'SELECT * FROM libro WHERE id = ? AND persona_prestamo <> null';
-        let respuesta_libro = await utilQuery(consulta_libro, [req.body.persona_prestamo]);
+        respuesta = await utilQuery(query, [req.body.persona_id]);
 
-        if (!respuesta_libro) {
-            throw new Error("Ese libro ya ha sido prestado");
+        if (respuesta.length == 0) {
+            throw new Error("No se encontro la persona a la que se quiere prestar el libro");
+        }
+
+        // Verificación que el libro NO este prestado
+        query = 'SELECT persona_id FROM libro WHERE id = ?';
+
+        respuesta = await utilQuery(query, [req.params.id]);
+        
+        if (respuesta[0].persona_id != null) {
+            throw new Error("El libro ya ha sido prestado");
         }
 
         // Se realiza la actualización de la base de datos
-        query = 'UPDATE libro SET persona_prestamo = ? WHERE id = ?';
+        query = 'UPDATE libro SET persona_id = ? WHERE id = ?';
 
-        respuesta2 = await utilQuery(query, [req.body.persona_prestamo, req.params.id]);
+        respuesta = await utilQuery(query, [req.body.persona_id, req.params.id]);
 
-        // MENSAJE DE ACCIÓN DE MODIFICACION CON PUT CONCRETADO 
         res.status(200).send("El libro se prestó correctamente");
     }
     catch (e) {
@@ -395,34 +383,34 @@ app.put('/libro/prestar/:id', async (req, res) => {
 // PUT libro devolver
 app.put('/libro/devolver/:id', async (req, res) => {
     try {
-
-        // Verificación de datos ingresados: ID libro y nombre libro
-        if (!req.body.nombre_libro || !req.params.id) {
-            throw new Error("Es necesario que se ingresen correctamente el nombre del libro a devolver y el ID del libro");
+        // Verificación de datos ingresados: ID libro y Id persona a prestar
+        if (!req.params.id) {
+            throw new Error("Es necesario que ingrese correctamente el ID del libro a devolver");
         }
 
-        //Validación de que los datos del libro sean correctos
+        // valida que el libro exista
+        let query = 'SELECT * FROM libro WHERE id = ?';
 
-        let query = 'SELECT * FROM libro WHERE nombre_libro = ? AND id = ?';
-
-        let respuesta = await utilQuery(query, [req.body.nombre_libro, req.params.id]);
+        let respuesta = await utilQuery(query, [req.params.id]);
 
         if (respuesta.length == 0) {
-            throw new Error("Ese libro NO existe");
+            throw new Error("No se encontro el libro");
         }
 
-        /*/Valido si ese libro estaba prestado
+        // valida que el libro ESTE prestado
+        query = 'SELECT persona_id FROM libro WHERE id = ?';
+
+        respuesta = await utilQuery(query, [req.params.id]);
         
-        if(req.persona_prestamo != null) {
-            throw new Error("Ese libro no estaba prestado")
-        }*/
+        if (respuesta[0].persona_id == null) {
+            throw new Error("El libro no ha sido prestado aún");
+        }
 
-        // Se realiza la actualización de la base de datos
-        qy = 'UPDATE libro SET persona_prestamo = null WHERE id = ?';
+        // update de la base de datos
+        query = 'UPDATE libro SET persona_id = null WHERE id = ?';
 
-        respuesta2 = await utilQuery(qy, [req.params.id]);
+        respuesta = await utilQuery(query, [req.params.id]);
 
-        // MENSAJE DE ACCIÓN DE MODIFICACION CON PUT CONCRETADO 
         res.status(200).send("El libro se devolvió correctamente");
     }
     catch (e) {
@@ -433,24 +421,30 @@ app.put('/libro/devolver/:id', async (req, res) => {
 // DELETE libro
 app.delete('/libro/:id', async (req, res) => {
     try {
-        //Validación de que los datos del libro sean correctos
-
+        //Valida de que los datos del libro sean correctos
         let query = 'SELECT * FROM libro WHERE id = ?';
 
         let respuesta = await utilQuery(query, [req.params.id]);
 
         if (respuesta.length == 0) {
-            throw new Error("Ese libro NO existe");
+            throw new Error("Ese libro no existe");
         }
-        //Valido si ese libro estaba prestado
 
-        if (req.persona_prestamo != null) {
-            throw new Error("Ese libro no estaba prestado")
+        // Verifica que el libro NO ESTE PRESTADO;
+        query = 'SELECT persona_id FROM libro WHERE id = ?';
+
+        respuesta = await utilQuery(query, [req.params.id]);
+        
+        if (respuesta[0].persona_id != null) {
+            throw new Error("El libro ha sido prestado, no se puede borrar");
         }
-        // Se realiza la actualización de la base de datos
-        qy = 'DELETE FROM libro WHERE id = ?';
 
-        respuesta2 = await utilQuery(qy, [req.params.id]);
+        // delete del libro de la BD
+        query = 'DELETE FROM libro WHERE id = ?';
+
+        respuesta = await utilQuery(query, [req.params.id]);
+
+        res.status(200).send("El libro se borró correctamente");
     }
     catch (e) {
         console.error(e.message);
@@ -523,7 +517,7 @@ app.post('/persona', async (req, res) => {
         const alias = req.body.alias.toUpperCase();
         const email = req.body.email.toUpperCase();
 
-        // Insertar registro en la BD
+        // Inserta registro de persona en la BD
         query = 'INSERT INTO persona (nombre, apellido, alias, email) VALUES (?, ?, ?, ?)';
         respuesta = await utilQuery(query, [nombre, apellido, alias, email]);
 
@@ -544,7 +538,7 @@ app.post('/persona', async (req, res) => {
 // PUT persona
 app.put('/persona/:id', async (req, res) => {
     try {
-        // Verificación de datos ingresados: ID libro y datos obligatorios
+        // Verifica datos ingresados: ID libro y datos obligatorios
         if (!req.params.id || !req.body.nombre || !req.body.apellido || !req.body.alias || !req.body.email) {
             throw new Error("Es necesario que se ingresen correctamente el ID de la persona y los datos correspondientes");
         }
@@ -579,7 +573,7 @@ app.put('/persona/:id', async (req, res) => {
         const email = req.body.email.toUpperCase();
 
 
-        // Se realiza la actualización de la base de datos
+        // update de la BD
         query = 'UPDATE persona SET nombre = ?, apellido = ?, alias = ?, email = ? WHERE id = ?';
 
         respuesta = await utilQuery(query, [nombre, apellido, alias, email, req.params.id]);
@@ -619,7 +613,7 @@ app.delete('/persona/:id', async (req, res) => {
             throw new Error("Esa persona tiene libros asociados, no se puede eliminar");
         }
 
-        // borrar el registro
+        // borrar el registro de la persona de la BD
         query = 'DELETE FROM persona WHERE id = ?';
 
         respuesta = await utilQuery(query, [req.params.id]);
