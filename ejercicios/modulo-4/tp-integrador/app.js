@@ -15,10 +15,8 @@ estado de la app (validaciones y testeo):
 - LIBRO:
     - GET: OK
     - GET + id: OK
-    - POST:
-        - falta validar que exista la persona si se agrega un libro ya prestado. 
-        - falta validar que funcione ok si la persona existe 
-    - PUT: verificar
+    - POST: OK
+    - PUT: OK (duda sobre datos que pueden modificarse)
     - DELETE: verificar
     
 - PERSONA: verificar todo
@@ -112,6 +110,7 @@ app.post('/categoria', async (req, res) => {
             throw new Error("No es posible ingresar solo espacios en blanco en el nombre de la categoria");
         }
         const nombreUpperCased = req.body.nombre_categoria.toUpperCase();
+        
         // verifica si el nombre ya existe
         let query = 'SELECT nombre_categoria FROM categoria WHERE nombre_categoria = ?';
 
@@ -207,64 +206,62 @@ app.post('/libro', async (req, res) => {
         if (!req.body.nombre_libro || !req.body.categoria_id) {
             throw new Error("Nombre y categoria son datos obligatorios!");
         }
-        // si no hay descripción en el body agrega una string vacia
-        if (!req.body.descripcion) {
-            req.body.descripcion = "";
-        }
-
-        // si no se agrega el campo "persona_id" se le da el valor de null
-        if (!req.body.persona_id) {
-            req.body.persona_id = null;
-        }
-
-        /* no esta funcionando
-        // si se ingresa un id en "persona_id" que no sea null valida que exista la persona
-        if (req.body.persona_id && req.body.persona_id != null) {
-            let qy = 'SELECT * FROM persona WHERE id = ?';
-
-            let respuesta1 = await utilQuery(qy, [req.body.persona_id]);
-
-            if (respuesta1.length == 0) {
-            throw new Error("No existe la persona indicada!");
-            }
-        }
-        */
-
-        const nombre_libro = req.body.nombre_libro.toUpperCase();
-        const descripcion = req.body.descripcion.toUpperCase();
-        const categoria_bd = req.body.categoria_id;
-        const persona = req.body.persona_id;
-
-        // Valida libro en BD
-        let query = 'SELECT * FROM libro WHERE nombre_libro = ?';
-
-        let respuesta = await utilQuery(query, [nombre_libro]);
-
-        if (respuesta.length > 0) {
-            throw new Error("Ese nombre de libro ya existe!");
-        }
 
         // valida que no se ingrese un nombre en blanco
-        if (/^\s+$/.test(nombre_libro)) {
+        if (/^\s+$/.test(req.body.nombre_libro)) {
             throw new Error("No es posible ingresar solo espacios en blanco en el nombre del libro");
         }
 
-        // Valida que exista la categoria
-        query = 'SELECT * FROM categoria WHERE id = ?';
+        // si el campo "descripción" viene vacio se le agrega un array vacio
+        if (!req.body.descripcion) {
+            req.body.descripcion = "";
+        };
 
-        respuesta = await utilQuery(query, [categoria_bd]);
+        // Valida que exista la categoria
+        let query = 'SELECT * FROM categoria WHERE id = ?';
+
+        let respuesta = await utilQuery(query, [req.body.categoria_id]);
 
         if (respuesta.length == 0) {
             throw new Error("No existe la categoria indicada!");
         }
 
+        // valida si el valor del campo "persona_id" referencia a una persona existente
+        if (req.body.persona_id > 0) {
+            query = 'SELECT id FROM persona WHERE id = ?';
 
+            respuesta = await utilQuery(query, [req.body.persona_id]);
+
+            if (respuesta.length == 0) {
+                throw new Error("No existe la persona indicada!");
+            }
+        };
+
+        // valida si el campo "persona_id" esta vacio. En ese caso le da el valor null
+        if (!req.body.persona_id) {
+            req.body.persona_id = null;
+        };
+
+        // const 
+        const nombre_libro = req.body.nombre_libro.toUpperCase();
+        const descripcion = req.body.descripcion.toUpperCase()
+        const categoria_bd = req.body.categoria_id;
+        const persona = req.body.persona_id;
+
+        // Valida libro en BD
+        query = 'SELECT * FROM libro WHERE nombre_libro = ?';
+
+        respuesta = await utilQuery(query, [nombre_libro]);
+
+        if (respuesta.length > 0) {
+            throw new Error("Ese nombre de libro ya existe!");
+        }
 
         // Insertar registro en la BD
         query = 'INSERT INTO libro (nombre_libro, descripcion, categoria_id, persona_id) VALUES (?, ?, ?, ?)';
         respuesta = await utilQuery(query, [nombre_libro, descripcion, categoria_bd, persona]);
 
-        res.status(200).send({ "respuesta": respuesta.insertId, nombre_libro });
+        res.status(200).send({ "id": req.params.id, "nombre": nombre_libro, "descripcion": descripcion, "categoria_id": categoria_bd, "persona_id": persona });
     }
     catch (e) {
         console.error(e.message);
@@ -274,31 +271,68 @@ app.post('/libro', async (req, res) => {
 // PUT libro
 app.put('/libro/:id', async (req, res) => {
     try {
-        // Validación de datos ingresados
-        // validacion ok
-        if (!req.body.nombre_libro) {
-            throw new Error("No enviaste el nombre del libro");
+        // valida todos los datos
+        if (!req.body.nombre_libro || !req.body.descripcion || !req.body.categoria_id || !req.body.persona_id) {
+            throw new Error("Ingresar los datos completos");
         }
 
-        let query = 'SELECT * FROM libro WHERE nombre_libro = ? AND id <> ?';
+        // valida que no se ingrese un nombre en blanco
+        if (/^\s+$/.test(req.body.nombre_libro)) {
+            throw new Error("No es posible ingresar solo espacios en blanco en el nombre del libro");
+        }
 
-        let respuesta = await utilQuery(query, [req.body.nombre_libro, req.params.id]);
-        // validacion ok
+        // Valida libro en BD
+        query = 'SELECT * FROM libro WHERE nombre_libro = ?';
+
+        respuesta = await utilQuery(query, [req.body.nombre_libro]);
+
         if (respuesta.length > 0) {
-            throw new Error("El nombre del libro que queres poner ahora ya existe");
+            throw new Error("Ese nombre de libro ya existe!");
         }
+
+        // si el campo "descripción" viene vacio o no existe se le agrega un array vacio
+        if (!req.body.descripcion) {
+            req.body.descripcion = "";
+        };
+
+        // Valida que exista la categoria
+        let query = 'SELECT * FROM categoria WHERE id = ?';
+
+        let respuesta = await utilQuery(query, [req.body.categoria_id]);
+
+        if (respuesta.length == 0) {
+            throw new Error("No existe la categoria indicada!");
+        }
+
+        // valida si el valor del campo "persona_id" referencia a una persona existente
+        if (req.body.persona_id > 0) {
+            query = 'SELECT id FROM persona WHERE id = ?';
+
+            respuesta = await utilQuery(query, [req.body.persona_id]);
+
+            if (respuesta.length == 0) {
+                throw new Error("No existe la persona indicada!");
+            }
+        };
+
+        // valida si el campo "persona_id" esta vacio. En ese caso le da el valor null
+        if (!req.body.persona_id) {
+            req.body.persona_id = null;
+        };
+
+        // const 
+        const nombre_libro = req.body.nombre_libro.toUpperCase();
+        const descripcion = req.body.descripcion.toUpperCase()
+        const categoria_bd = req.body.categoria_id;
+        const persona = req.body.persona_id;
+
 
         // Se realiza la actualización de la base de datos
-        query = 'UPDATE libro SET nombre_libro = ?, descripcion = ? WHERE id = ?';
+        query = 'UPDATE libro SET nombre_libro = ?, descripcion = ?, categoria_id = ?, persona_id = ? WHERE id = ?';
 
-        respuesta = await utilQuery(query, [req.body.nombre_libro.toUpperCase(), req.body.descripcion.toUpperCase(), req.params.id]);
+        respuesta = await utilQuery(query, [nombre_libro, descripcion, categoria_bd, persona, req.params.id]);
 
-
-        // Se realiza la consulta nuevamente para mostrar datos
-        const consulta = 'SELECT * FROM libro WHERE id = ?';
-
-        let respuesta1 = await utilQuery(consulta, req.params.id);
-        res.status(200).send({ "respuesta": respuesta1 });
+        res.status(200).send({ "id": req.params.id, "nombre": nombre_libro, "descripcion": descripcion, "categoria_id": categoria_bd, "persona_id": persona });
     }
     catch (e) {
         console.error(e.message);
@@ -476,7 +510,7 @@ app.post('/persona', async (req, res) => {
         let query = 'SELECT email FROM persona WHERE email = ?';
 
         let respuesta = await utilQuery(query, [req.body.email]);
-        
+
         if (respuesta > 0) {
             throw new Error("El email ya se encuentra registrado");
         }
@@ -531,7 +565,7 @@ app.put('/persona/:id', async (req, res) => {
         query = 'SELECT email FROM persona WHERE email = ?';
 
         respuesta = await utilQuery(query, [req.body.email]);
-        
+
         if (respuesta > 0) {
             throw new Error("El email ya se encuentra registrado");
         }
@@ -588,7 +622,7 @@ app.delete('/persona/:id', async (req, res) => {
 
         respuesta = await utilQuery(query, [req.params.id]);
 
-        res.status(200).send( "El registro se borro correctamente" );
+        res.status(200).send("El registro se borro correctamente");
     }
     catch (e) {
         console.error(e.message);
