@@ -26,7 +26,7 @@ Se evaluara la correcta implementacion, el uso de try/catch, async-await, cors, 
 
 El tp se realizara en grupos de 5 o 6 personas que seran elegidas al azar por el campus
 
-La entrega se realizara en formato ZIP y se deberan incluir: package.json, package-lock.json, app.json NO INCLUIR node_modules (va a descontar puntaje el envio de esta carpeta).
+La entrega se realizara en formato ZIP y se deberan incluir: package.json, package-lock.json, app.js NO INCLUIR node_modules (va a descontar puntaje el envio de esta carpeta).
 
 Solo 1 entrega por equipo. Se debe incluir un archivo txt con el numero de grupo y el nombre y apellido de los integrantes.
 
@@ -53,6 +53,7 @@ body(JSON): {}
 GET '/categoria/:id'
 retorna:
     status 200 y {id: numerico, nombre:string}
+
     status: 413, {mensaje: <descripcion del error>} que puede ser: "error inesperado", "categoria no encontrada"
 
 --------
@@ -66,7 +67,8 @@ body(JSON): {}
 POST '/categoria'
 recibe: {nombre: string}
 retorna:
-    status: 200, {id: numerico, nombre: string} 
+    status: 200, {id: numerico, nombre: string}
+
     status: 413, {mensaje: <descripcion del error>} que puede ser: "faltan datos", "ese nombre de categoria ya existe", "error inesperado"
 
 --------
@@ -83,6 +85,7 @@ body(JSON):
 DELETE '/categoria/:id'
 retorna:
     status 200 y {mensaje: "se borro correctamente"}
+
     status: 413, {mensaje: <descripcion del error>} que puese ser: "error inesperado", "categoria con libros asociados, no se puede eliminar", "no existe la categoria indicada"
 
 No se debe implementar el PUT

@@ -1,25 +1,3 @@
-/* 
-estado de la app (validaciones y testeo):
-- CATEGORIA:
-    - GET: 
-    - GET + id: 
-    - POST: 
-    - DELETE: 
-
-- LIBRO:
-    - GET:
-    - GET + id:
-    - POST:
-    - PUT:
-    - DELETE:
-    
-- PERSONA:
-    - GET:
-    - GET + id:
-    - POST:
-    - DELETE:
-*/
-
 /* ========== REQUIRES ========== */
 const express = require('express');
 const mysql = require('mysql');
@@ -37,7 +15,7 @@ const conexion = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: '',
-    database: 'mybs'
+    database: 'mybooks'
 });
 
 conexion.connect((error) => {
@@ -117,7 +95,7 @@ app.post('/categoria', async (req, res) => {
 
         respuesta = await utilQuery(query, nombreUpperCased);
 
-        res.status(200).send({ "respuesta": respuesta.insertId, "nombre": nombreUpperCased });
+        res.status(200).send({ "id": respuesta.insertId, "nombre": nombreUpperCased });
     }
     catch (e) {
         console.error(e.message);
@@ -148,7 +126,7 @@ app.delete('/categoria/:id', async (req, res) => {
         query = 'DELETE FROM categoria WHERE id = ?';
         respuesta = await utilQuery(query, [req.params.id]);
 
-        res.status(200).send("La categoria se borro correctamente");
+        res.status(200).send("La categoria se borró correctamente");
     }
     catch (e) {
         console.error(e.message);
@@ -253,7 +231,12 @@ app.post('/libro', async (req, res) => {
         query = 'INSERT INTO libro (nombre_libro, descripcion, categoria_id, persona_id) VALUES (?, ?, ?, ?)';
         respuesta = await utilQuery(query, [nombre_libro, descripcion, categoria_bd, persona]);
 
-        res.status(200).send({ "id": req.params.id, "nombre": nombre_libro, "descripcion": descripcion, "categoria_id": categoria_bd, "persona_id": persona });
+        // toma id del libro para agregar al res.send
+        query = 'SELECT id FROM libro WHERE nombre_libro = ?';
+        respuesta = await utilQuery(query, [nombre_libro])
+        
+        // send
+        res.status(200).send({ "id": respuesta[0].id, "nombre": nombre_libro, "descripcion": descripcion, "categoria_id": categoria_bd, "persona_id": persona });
     }
     catch (e) {
         console.error(e.message);
@@ -325,7 +308,12 @@ app.put('/libro/:id', async (req, res) => {
 
         respuesta = await utilQuery(query, [descripcion, req.params.id]);
 
-        res.status(200).send({ "id": req.params.id, "nombre": nombre_libro, "descripcion": descripcion, "categoria_id": categoria_bd, "persona_id": persona });
+        // toma id del libro para agregar al res.send
+        query = 'SELECT id FROM libro WHERE nombre_libro = ?';
+        respuesta = await utilQuery(query, [nombre_libro])
+        
+        // send
+        res.status(200).send({ "id": respuesta[0].id, "nombre": nombre_libro, "descripcion": descripcion, "categoria_id": categoria_bd, "persona_id": persona });
     }
     catch (e) {
         console.error(e.message);
@@ -506,7 +494,7 @@ app.post('/persona', async (req, res) => {
 
         let respuesta = await utilQuery(query, [req.body.email]);
 
-        if (respuesta > 0) {
+        if (respuesta.length > 0) {
             throw new Error("El email ya se encuentra registrado");
         }
 
@@ -520,7 +508,12 @@ app.post('/persona', async (req, res) => {
         query = 'INSERT INTO persona (nombre, apellido, alias, email) VALUES (?, ?, ?, ?)';
         respuesta = await utilQuery(query, [nombre, apellido, alias, email]);
 
-        res.status(200).send({ "nombre": nombre, "apellido": apellido, "alias": alias, "email": email });
+        // toma id de persona para agregar al res.send
+        query = 'SELECT id FROM persona WHERE nombre = ?';
+        respuesta = await utilQuery(query, [nombre])
+        
+        // send
+        res.status(200).send({ "id": respuesta[0].id,"nombre": nombre, "apellido": apellido, "alias": alias, "email": email });
     }
 
     catch (e) {
@@ -577,7 +570,12 @@ app.put('/persona/:id', async (req, res) => {
 
         respuesta = await utilQuery(query, [nombre, apellido, alias, email, req.params.id]);
 
-        res.status(200).send({ "nombre": nombre, "apellido": apellido, "alias": alias, "email": email });
+        // toma id de persona para agregar al res.send
+        query = 'SELECT id FROM persona WHERE nombre = ?';
+        respuesta = await utilQuery(query, [nombre])
+        
+        // send
+        res.status(200).send({ "id": respuesta[0].id,"nombre": nombre, "apellido": apellido, "alias": alias, "email": email });
     }
 
     catch (e) {
@@ -603,14 +601,16 @@ app.delete('/persona/:id', async (req, res) => {
             throw new Error("Esa persona no existe");
         }
 
+        
         // Valida si la persona tiene libros asociados
-        query = 'SELECT persona_id FROM libro WHERE id = ?';
+        query = 'SELECT persona_id FROM libro WHERE persona_id = ?';
 
         respuesta = await utilQuery(query, [req.params.id]);
-
-        if (respuesta == req.params.id) {
+        console.log(respuesta)
+        if (respuesta.length > 0) {
             throw new Error("Esa persona tiene libros asociados, no se puede eliminar");
         }
+        
 
         // borrar el registro de la persona de la BD
         query = 'DELETE FROM persona WHERE id = ?';
