@@ -40,7 +40,7 @@ Cómo trabajan las sesiones
       |            <--- response ---               | Response
       |                                            | cookie: session='abc'
       |                                            |
-      | --- GET /profile, cockie: sesion='abc' --- | Session
+      | --- GET /profile, cockie: sesion='abc' --> | Session
       |            <--- response ---               | matches?
       |                                            |
 
