@@ -1,0 +1,11 @@
+/* Models
+
+Dentro de la carpeta models va la representación de cada una de las tablas de la base de
+datos y sus respectivas consultas.
+
+Será un archivo por tabla. En caso de consultas que involucren más de una tabla, el
+service se encargará de dicha lógica, invocando los modelos necesarios en el orden
+requerido para completar la consulta final.
+
+Los modelos serán invocados por los services.
+*/
