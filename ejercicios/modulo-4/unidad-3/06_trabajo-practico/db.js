@@ -1,31 +1,25 @@
 /* ========== REQUIRES ========== */
-const express = require('express');
 const mysql = require('mysql');
 const util = require('util');
-const cors = require("cors");
+const settings = require('./settings.json');
+const db;
 
-const app = express();
-const port = 3000;
+function connectDatabase() {
+    if (!db) {
+        db = mysql.createConnection(settings);
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(cors());
-
-/* ========== MYSQL ========== */
-// Para trabajar con base de datos mysql
-const conexion = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'mybooks'
-});
-
-conexion.connect((error) => {
-    if (error) {
-        throw error;
+        db.connect(err => {
+            if (!err) {
+                console.log("Ya estas conectado con la base de datos");
+            } else {
+                console.log("Error conectando con la base de datos!")
+            }
+        });
     }
 
-    console.log('Conexion con base de datos mysql establecida');
-});
+    db.query = util.promisify(db.query);
 
-const utilQuery = util.promisify(conexion.query).bind(conexion);
+    return db;
+};
+
+module.exports = connectDatabase();

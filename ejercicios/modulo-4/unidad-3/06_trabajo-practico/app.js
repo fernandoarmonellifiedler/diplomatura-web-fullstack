@@ -1,3 +1,9 @@
+/* Info: En app.js queda la lógica de ruteo.
+
+La conexión a la base de datos se realiza en archivo aparte que luego es incluída en los
+diferentes modelos.
+*/
+
 /* ========== REQUIRES ========== */
 const express = require('express');
 const mysql = require('mysql');

@@ -1,4 +1,5 @@
 // llama los services
+const personaService = require('../services/personaService');
 
 /* ===== 3) PERSONA ===== */
 // GET personas

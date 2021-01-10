@@ -1,4 +1,5 @@
 // llama los services
+const categoriaService = require('../services/categoriaService');
 
 /* ===== 1) CATEGORIA ===== */
 // GET para todas las categorias

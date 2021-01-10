@@ -1,6 +1,3 @@
-// llama los services
-
-/* ===== 2) LIBRO ===== */
 // GET todos los libros
 app.get('/libro', async (req, res) => {
     try {

@@ -1,6 +1,3 @@
-// llama los services
-
-/* ===== 3) PERSONA ===== */
 // GET personas
 app.get('/persona', async (req, res) => {
     try {
@@ -72,9 +69,9 @@ app.post('/persona', async (req, res) => {
         // toma id de persona para agregar al res.send
         query = 'SELECT id FROM persona WHERE nombre = ?';
         respuesta = await utilQuery(query, [nombre])
-        
+
         // send
-        res.status(200).send({ "id": respuesta[0].id,"nombre": nombre, "apellido": apellido, "alias": alias, "email": email });
+        res.status(200).send({ "id": respuesta[0].id, "nombre": nombre, "apellido": apellido, "alias": alias, "email": email });
     }
 
     catch (e) {
@@ -134,9 +131,9 @@ app.put('/persona/:id', async (req, res) => {
         // toma id de persona para agregar al res.send
         query = 'SELECT id FROM persona WHERE nombre = ?';
         respuesta = await utilQuery(query, [nombre])
-        
+
         // send
-        res.status(200).send({ "id": respuesta[0].id,"nombre": nombre, "apellido": apellido, "alias": alias, "email": email });
+        res.status(200).send({ "id": respuesta[0].id, "nombre": nombre, "apellido": apellido, "alias": alias, "email": email });
     }
 
     catch (e) {
@@ -162,7 +159,7 @@ app.delete('/persona/:id', async (req, res) => {
             throw new Error("Esa persona no existe");
         }
 
-        
+
         // Valida si la persona tiene libros asociados
         query = 'SELECT persona_id FROM libro WHERE persona_id = ?';
 
@@ -171,7 +168,7 @@ app.delete('/persona/:id', async (req, res) => {
         if (respuesta.length > 0) {
             throw new Error("Esa persona tiene libros asociados, no se puede eliminar");
         }
-        
+
 
         // borrar el registro de la persona de la BD
         query = 'DELETE FROM persona WHERE id = ?';

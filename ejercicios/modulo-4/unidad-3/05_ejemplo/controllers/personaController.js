@@ -1,12 +1,7 @@
 const personaService = require('../services/personaService');
 
 module.exports = {
-    guardarUnaPersona: async persona => {
-        const personaNueva = personaService.guardarUnaPersona(persona);
-
-        return personaNueva;
-    },
-
+    
     listarPersonas: async () => {
         const listado = await personaService.listarPersonas();
 
@@ -17,6 +12,12 @@ module.exports = {
         const persona = await personaService.traerUnaPersona(id);
 
         return persona;
+    },
+
+    guardarUnaPersona: async persona => {
+        const personaNueva = personaService.guardarUnaPersona(persona);
+
+        return personaNueva;
     },
 
     modificarPersona: async (id, edad, mail) => {

@@ -1,6 +1,3 @@
-// llama los services
-
-/* ===== 1) CATEGORIA ===== */
 // GET para todas las categorias
 app.get('/categoria', async (req, res) => {
     try {

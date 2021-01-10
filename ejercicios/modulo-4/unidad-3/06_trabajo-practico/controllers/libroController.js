@@ -1,4 +1,5 @@
 // llama los services
+const libroService = require('../services/libroService');
 
 /* ===== 2) LIBRO ===== */
 // GET todos los libros

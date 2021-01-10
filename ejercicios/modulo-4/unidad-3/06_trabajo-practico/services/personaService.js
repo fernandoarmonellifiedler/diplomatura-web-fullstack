@@ -1,17 +1,18 @@
+// consulta a models
 const personaModel = require('../models/persona');
 
 module.exports = {
 
-    listarPersonas: async () => {
-        const listaDePersonas = await personaModel.traerTodasLasPersonas();
+    traerTodasLasPersona: async () => {
+        const listadoPersonas = await  personaModel.traerTodasLasPersonas();
 
-        return listaDePersonas;
+        return listadoPersonas;
     },
 
-    traerUnaPersona: async id => {
-        const persona = await personaModel.traerUnaPersona(id);
+    traerUnaPersona: async (id) => {
+        const unaPersona = await personaModel.traerUnaPersona(id);
 
-        return persona;
+        return unaPersona;
     },
 
     guardarUnaPersona: async persona => {
@@ -24,7 +25,6 @@ module.exports = {
     },
 
     modificarPersona: async (id, edad, mail) => {
-
         const resultado = await personaModel.modificarPersona(id, edad, mail);
 
         if (resultado == 1) {
