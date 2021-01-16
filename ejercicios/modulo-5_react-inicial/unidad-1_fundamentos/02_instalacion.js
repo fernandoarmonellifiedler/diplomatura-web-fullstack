@@ -11,7 +11,7 @@ npm install -g create-react-app
 El cual instalará una aplicación que nos permite crear un nuevo proyecto en React. Esta
 operación puede demorar unos minutos y necesita de una conexión a internet.
 
---------------------------------
+------------------------------
 Línea de comandos de React
 
 Una vez instalada la aplicación de generación de proyectos en React (create-react-app), y
