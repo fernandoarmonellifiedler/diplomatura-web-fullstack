@@ -1,26 +1,19 @@
 import React from 'react';
+import Titulo from './titulo';
+import Descripcion from './descripcion';
+import Imagen from './imagen';
 
 export default class Componente extends React.Component {
-    /*
-    render() {
-        return (
-            <div>
-                <h1>{this.props.compTitle}</h1>
-                <p>{this.props.compDescr}</p>
-                <img src={this.props.compUrl} />
-            </div>
-        );
-    }
-    */
+
     render() {
         return (
             <div className="comp">
                 <div className="div-comp-text">
-                    <h1>{this.props.compTitle}</h1>
-                    <p>{this.props.compDescr}</p>
+                    <Titulo name={this.props.compTitle} />
+                    <Descripcion name={this.props.compDescr} />
                 </div>
                 <div className="div-comp-img">
-                    <img src={this.props.compUrl} />
+                    <Imagen src={this.props.compUrl} />
                 </div>
             </div>
         );
