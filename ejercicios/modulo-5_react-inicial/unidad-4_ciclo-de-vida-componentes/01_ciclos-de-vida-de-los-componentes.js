@@ -2,6 +2,26 @@
 
 Los componentes en React tienen un ciclo de vida, una creación, los procesos de render y por último una destrucción. A continuación abordaremos el ciclo de vida de cada componente.
 
+                  Montaje     Actualización     Desmontaje
+                     ↓                               |
+"Fase Render"   constructor     New props            |
+                     |          setState()           |
+                     |          forceUpdate()        |
+                     ↓              ↓                |
+                -------------------------------      |
+                            render                   |
+                -------------------------------      |
+                     ↓              ↓                |
+-------------   -------------------------------------|------
+"Fase Commit"   React actualiza el DOM y referencias |
+                     ↓              ↓                ↓
+             componentDidMount componentDidUpdate componentDidUnmount
+
+
+"Fase Render": Pura y sin efectos colaterales, puede ser pausada, abortada o reiniciada por React.
+"Fase Commit": Puede operar sobre el DOM, ejecutar side-effects, agendar actualizaciones
+
+
 Montaje
 El montaje es el proceso por el cual el componente que creamos se incorpora en nuestra página web (DOM - Document Object Model). El proceso de montaje sigue los siguientes pasos.
 
@@ -29,5 +49,6 @@ Los pasos de la actualización de un componente son
 
 Desmontaje
 Cuando el componente deja de ser visualizado, el mismo es desmontado (se elimina del DOM), esto provoca la llamada a un único método particular componentWillUnmount.
+
 En el método componentDidUnmount debemos liberar aquellos recursos que hayamos asignado explícitamente o suscrito.
 */

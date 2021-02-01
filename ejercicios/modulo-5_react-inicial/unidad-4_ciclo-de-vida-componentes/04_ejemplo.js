@@ -7,9 +7,9 @@ En esta sección veremos como podemos asociar un input a un estado, lo que nos p
 información que ingresa el usuario desde React.
 
 Antes de comenzar con un ejemplo, veamos las consideraciones que debe cumplir este two way binding.
-● Debemos tener un estado
-● Si modificamos la propiedad en el estado, se debe actualizar el input del formulario
-● Si modificamos el input del formulario, se debe actualizar la propiedad en el estado
+    ● Debemos tener un estado
+    ● Si modificamos la propiedad en el estado, se debe actualizar el input del formulario
+    ● Si modificamos el input del formulario, se debe actualizar la propiedad en el estado
 
 Ejemplo: Veamos un ejemplo del método render con esta etiqueta. */
 
@@ -60,14 +60,12 @@ export default class MiComponente extends React.Component {
 
 
 // Verificación del código de respuesta del servidor
-
 var respuesta = await axios.get('');
 // ...
 respuesta.status
 
 
 // Acceder a los datos
-
 var respuesta = await axios.get('');
 // ...
 respuesta.data
