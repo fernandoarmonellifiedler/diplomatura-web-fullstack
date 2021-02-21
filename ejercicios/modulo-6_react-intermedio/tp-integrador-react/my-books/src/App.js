@@ -1,11 +1,15 @@
 import './App.css';
-import Libros from './components/Libros';
+import Persona from './components/Persona';
+import Generos from './components/Generos';
+import Libro from './components/Libro';
 
 function App() {
   return (
     <div className='App'>
       <h1>My Books</h1>
-      <Libros />
+      {/* <Persona />
+      <Generos /> */}
+      <Libro />
     </div>
   );
 }
