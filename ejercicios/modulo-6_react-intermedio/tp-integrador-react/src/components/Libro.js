@@ -2,7 +2,6 @@ import React, { useState, useEffect, useReducer } from 'react';
 import axios from 'axios';
 import { reducer } from '../reducers/libroReducer'; // import reducer
 
-
 // uuid module (generador de id unicos para cada libro)
 // import { v4 as uuidv4 } from 'uuid';
 // uuidv4(); // ⇨ '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d'
@@ -11,7 +10,7 @@ import { reducer } from '../reducers/libroReducer'; // import reducer
 const defaultState = {
   libros: [],
   prestado: false,
-}
+};
 
 const Libro = () => {
   // state de libro nuevo
@@ -29,25 +28,38 @@ const Libro = () => {
       const response = await axios.get('http://localhost:3005/libro');
       if (!response.data || response.data?.length == 0) return;
       dispatch({ type: 'FETCH LIST', payload: response.data });
-    } catch (error) {
-      console.log(error);
+    } catch (e) {
+      console.log(e);
     }
   }, []);
-  
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (nombre && descripcion) {
       const nuevoLibro = {
         id: new Date().getTime().toString(),
-        nombre,
-        descripcion,
-        categoria,
-        persona,
+        nombre_libro: nombre,
+        descripcion: descripcion,
+        categoria_id: categoria,
+        persona_id: persona,
       };
       console.log(nuevoLibro);
       dispatch({ type: 'ADD_ITEM', payload: nuevoLibro });
-
       // falta agregar comando en axios para agregar el libro nuevo a la base de datos MySQL
+      // axios.post('http://localhost:3005/libro', nuevoLibro)
+      //   .then(response => console.log(response))
+      //   .catch(error => console.log(error));
+      axios({
+        method: 'post',
+        url: 'http://localhost:3005/libro',
+        data: {
+          id: new Date().getTime().toString(),
+          nombre_libro: 'nombre',
+          descripcion: 'descripcion',
+          categoria_id: 'categoria',
+          persona_id: 'persona',
+        },
+      });
 
       setNombre('');
       setDescripcion('');
