@@ -1,9 +1,33 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useReducer } from 'react';
 import axios from 'axios';
 
-// uuid module (unique id)
+// uuid module (generador de id unicos para cada libro)
 // import { v4 as uuidv4 } from 'uuid';
 // uuidv4(); // ⇨ '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d'
+
+// useReducer
+const reducer = (state, action) => {
+  if (action.type === 'FETCH LIST') {
+    const nuevoLibros = action.payload;
+    return {
+      ...state,
+      libros: nuevoLibros,
+    };
+  }
+
+  if (action.type === 'ADD_ITEM') {
+    const nuevoLibros = [...state.libros, action.payload];
+    return {
+      ...state,
+      libros: nuevoLibros,
+    };
+  }
+
+  throw new Error('no matching action type');
+};
+const defaultState = {
+  libros: [],
+};
 
 const Libro = () => {
   // nombre y descripcion de libro nuevo
@@ -12,14 +36,14 @@ const Libro = () => {
   const [categoria, setCategoria] = useState('');
   const [persona, setPersona] = useState('');
 
-  // lista de libros
-  const [libros, setLibros] = useState([]);
+  // reducer
+  const [state, dispatch] = useReducer(reducer, defaultState);
 
   useEffect(async () => {
     try {
       const response = await axios.get('http://localhost:3005/libro');
       if (!response.data || response.data?.length == 0) return;
-      setLibros(response.data);
+      dispatch({ type: 'FETCH LIST', payload: response.data });
     } catch (error) {
       console.log(error);
     }
@@ -36,9 +60,8 @@ const Libro = () => {
         persona,
       };
       console.log(nuevoLibro);
-      setLibros((libros) => {
-        return [...libros, nuevoLibro];
-      });
+      dispatch({ type: 'ADD_ITEM', payload: nuevoLibro });
+
       // falta comando en axios para agregar el libro nuevo a la base de datos MySQL
       setNombre('');
       setDescripcion('');
@@ -105,7 +128,7 @@ const Libro = () => {
         </form>
 
         <h2>Listado de libros</h2>
-        {libros.map((unLibro) => {
+        {state.libros.map((unLibro) => {
           const {
             id,
             nombre_libro,
