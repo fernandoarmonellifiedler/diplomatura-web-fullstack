@@ -1,44 +1,29 @@
 import React, { useState, useEffect, useReducer } from 'react';
 import axios from 'axios';
+import { reducer } from '../reducers/libroReducer'; // import reducer
+
 
 // uuid module (generador de id unicos para cada libro)
 // import { v4 as uuidv4 } from 'uuid';
 // uuidv4(); // ⇨ '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d'
 
-// useReducer
-const reducer = (state, action) => {
-  if (action.type === 'FETCH LIST') {
-    const nuevoLibros = action.payload;
-    return {
-      ...state,
-      libros: nuevoLibros,
-    };
-  }
-
-  if (action.type === 'ADD_ITEM') {
-    const nuevoLibros = [...state.libros, action.payload];
-    return {
-      ...state,
-      libros: nuevoLibros,
-    };
-  }
-
-  throw new Error('no matching action type');
-};
+// default state
 const defaultState = {
   libros: [],
-};
+  prestado: false,
+}
 
 const Libro = () => {
-  // nombre y descripcion de libro nuevo
+  // state de libro nuevo
   const [nombre, setNombre] = useState('');
   const [descripcion, setDescripcion] = useState('');
   const [categoria, setCategoria] = useState('');
   const [persona, setPersona] = useState('');
 
-  // reducer
+  // useReducer
   const [state, dispatch] = useReducer(reducer, defaultState);
 
+  // fetching external list
   useEffect(async () => {
     try {
       const response = await axios.get('http://localhost:3005/libro');
@@ -48,7 +33,7 @@ const Libro = () => {
       console.log(error);
     }
   }, []);
-
+  
   const handleSubmit = (e) => {
     e.preventDefault();
     if (nombre && descripcion) {
@@ -62,7 +47,8 @@ const Libro = () => {
       console.log(nuevoLibro);
       dispatch({ type: 'ADD_ITEM', payload: nuevoLibro });
 
-      // falta comando en axios para agregar el libro nuevo a la base de datos MySQL
+      // falta agregar comando en axios para agregar el libro nuevo a la base de datos MySQL
+
       setNombre('');
       setDescripcion('');
       setCategoria('');
@@ -128,6 +114,7 @@ const Libro = () => {
         </form>
 
         <h2>Listado de libros</h2>
+        {/* iterando sobre la lista de libros de la base de datos */}
         {state.libros.map((unLibro) => {
           const {
             id,
@@ -143,7 +130,14 @@ const Libro = () => {
               <p>{categoria_id || 'sin categoria'}</p>
               <p>{persona_id || 'libro disponible'}</p>
               <button className='btn'>Editar</button>
-              <button className='btn'>Eliminar</button>
+              <button
+                className='btn'
+                onClick={() =>
+                  dispatch({ type: 'REMOVE_ITEM', payload: unLibro.id })
+                }
+              >
+                Eliminar
+              </button>
               <button className='btn'>prestar / devolver</button>
             </div>
           );
