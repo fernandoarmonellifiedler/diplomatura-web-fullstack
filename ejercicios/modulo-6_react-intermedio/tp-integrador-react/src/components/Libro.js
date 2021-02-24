@@ -37,7 +37,6 @@ const Libro = () => {
     e.preventDefault();
     if (nombre && descripcion) {
       const nuevoLibro = {
-        id: new Date().getTime().toString(),
         nombre_libro: nombre,
         descripcion: descripcion,
         categoria_id: categoria,
@@ -53,7 +52,6 @@ const Libro = () => {
         method: 'post',
         url: 'http://localhost:3005/libro',
         data: {
-          id: new Date().getTime().toString(),
           nombre_libro: 'nombre',
           descripcion: 'descripcion',
           categoria_id: 'categoria',
