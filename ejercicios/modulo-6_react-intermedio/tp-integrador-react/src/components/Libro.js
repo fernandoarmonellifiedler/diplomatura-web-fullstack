@@ -1,15 +1,11 @@
 import React, { useState, useEffect, useReducer } from 'react';
 import axios from 'axios';
 import { reducer } from '../reducers/libroReducer'; // import reducer
+import { v4 as uuidv4 } from 'uuid'; // genera id unicos
 
-// uuid module (generador de id unicos para cada libro)
-// import { v4 as uuidv4 } from 'uuid';
-// uuidv4(); // ⇨ '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d'
-
-// default state
+// reducer: default state
 const defaultState = {
   libros: [],
-  prestado: false,
 };
 
 const Libro = () => {
@@ -22,7 +18,7 @@ const Libro = () => {
   // useReducer
   const [state, dispatch] = useReducer(reducer, defaultState);
 
-  // fetching external list
+  // buscar lista de libros en BD
   useEffect(async () => {
     try {
       const response = await axios.get('http://localhost:3005/libro');
@@ -32,9 +28,9 @@ const Libro = () => {
       console.log(e);
     }
   }, []);
-
+  // envío de formulario
   const handleSubmit = (e) => {
-    e.preventDefault();
+    e.preventDefault(); // evita aguegar campos vacios
     if (nombre && descripcion) {
       const nuevoLibro = {
         nombre_libro: nombre,
@@ -42,23 +38,11 @@ const Libro = () => {
         categoria_id: categoria,
         persona_id: persona,
       };
-      console.log(nuevoLibro);
+      // agregar libro al state
       dispatch({ type: 'ADD_ITEM', payload: nuevoLibro });
-      // falta agregar comando en axios para agregar el libro nuevo a la base de datos MySQL
-      // axios.post('http://localhost:3005/libro', nuevoLibro)
-      //   .then(response => console.log(response))
-      //   .catch(error => console.log(error));
-      axios({
-        method: 'post',
-        url: 'http://localhost:3005/libro',
-        data: {
-          nombre_libro: 'nombre',
-          descripcion: 'descripcion',
-          categoria_id: 'categoria',
-          persona_id: 'persona',
-        },
-      });
-
+      // axios POST
+      axios.post('http://localhost:3005/libro', nuevoLibro);
+      // borrar campos luego de agregar el item
       setNombre('');
       setDescripcion('');
       setCategoria('');
@@ -66,6 +50,12 @@ const Libro = () => {
     } else {
       window.alert('No puedes ingresar valores en blanco');
     }
+  };
+
+  const handleDelete = (e) => {
+    const libroId = e.target.value;
+    dispatch({ type: 'REMOVE_ITEM', payload: libroId });
+    axios.delete('http://localhost:3005/libro/'+libroId);
   };
 
   return (
@@ -100,7 +90,7 @@ const Libro = () => {
           </div>
           {/* Categoria */}
           <div className='form-control'>
-            <label htmlFor='libro-categoria'>Categoria: </label>
+            <label htmlFor='libro-categoria'>Categoria ID: </label>
             <input
               type='text'
               id='libro-categoria'
@@ -111,7 +101,7 @@ const Libro = () => {
           </div>
           {/* Persona */}
           <div className='form-control'>
-            <label htmlFor='libro-persona'>Persona: </label>
+            <label htmlFor='libro-persona'>Prestar a: </label>
             <input
               type='text'
               id='libro-persona'
@@ -134,18 +124,13 @@ const Libro = () => {
             persona_id,
           } = unLibro;
           return (
-            <div className='item' key={id}>
+            <div className='item' key={id || uuidv4()}>
               <h4>{nombre_libro || 'sin libro'}</h4>
               <p>{descripcion || 'sin descripcion'}</p>
               <p>{categoria_id || 'sin categoria'}</p>
               <p>{persona_id || 'libro disponible'}</p>
               <button className='btn'>Editar</button>
-              <button
-                className='btn'
-                onClick={() =>
-                  dispatch({ type: 'REMOVE_ITEM', payload: unLibro.id })
-                }
-              >
+              <button className='btn' onClick={handleDelete} value={id}>
                 Eliminar
               </button>
               <button className='btn'>prestar / devolver</button>

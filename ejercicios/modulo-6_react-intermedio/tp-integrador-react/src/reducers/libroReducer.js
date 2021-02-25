@@ -16,11 +16,12 @@ export const reducer = (state, action) => {
   }
 
   if (action.type === 'REMOVE_ITEM') {
-    const nuevoLibros = state.libros.filter(
-      (unLibro) => unLibro.id !== action.payload
-    );
-    return { ...state, libros: nuevoLibros };
+    return {
+      ...state,
+      libros: state.libros.filter((unLibro) => {
+        return unLibro.id != action.payload;
+      }),
+    };
   }
-
   throw new Error('no matching action type');
 };
