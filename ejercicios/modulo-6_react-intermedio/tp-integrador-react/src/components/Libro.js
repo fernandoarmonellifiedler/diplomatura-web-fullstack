@@ -129,11 +129,13 @@ const Libro = () => {
           } = unLibro;
           return (
             <div className='item' key={id || uuidv4()}>
-              <h5>{nombre_libro || 'sin libro'}</h5>
-              <p>{descripcion || 'sin descripcion'}</p>
-              <p>{categoria_id || 'sin categoria'}</p>
-              <p>{persona_id || 'libro disponible'}</p>
-              <div className='botones'>
+              <div className='item-datos'>
+                <p>Titulo: {nombre_libro || 'sin libro'}</p>
+                <p>Descripción: {descripcion || 'sin descripcion'}</p>
+                <p>Categoría: {categoria_id || 'sin categoria'}</p>
+                <p>Estatus: {persona_id || 'libro disponible'}</p>
+              </div>
+              <div className='item-botones'>
                 <button className='btn' onClick={handleEdit} value={id}>
                   Editar
                 </button>

@@ -22,7 +22,7 @@ const Persona = () => {
   useEffect(async () => {
     try {
       const response = await axios.get('http://localhost:3005/persona');
-      
+
       if (!response.data || response.data?.length == 0) return;
       dispatch({ type: 'FETCH LIST', payload: response.data });
     } catch (e) {
@@ -61,8 +61,6 @@ const Persona = () => {
   };
 
   const handleEdit = (e) => {};
-
-  const handlePrestar = (e) => {};
 
   return (
     <>
@@ -122,25 +120,18 @@ const Persona = () => {
         <h3>Listado de personas</h3>
         {/* iterando sobre la lista de personas de la base de datos */}
         {state.personas.map((unaPersona) => {
-          const {
-            id,
-            nombre,
-            apellido,
-            alias,
-            email,
-          } = unaPersona;
+          const { id, nombre, apellido, alias, email } = unaPersona;
           return (
             <div className='item' key={id || uuidv4()}>
-              <h5>{nombre || 'sin nombre'}</h5>
-              <p>{apellido || 'sin apellido'}</p>
-              <p>{alias || 'sin alias'}</p>
-              <p>{email || 'sin email'}</p>
-              <div className='botones'>
+              <div className='item-datos'>
+                <p>Nombre: {nombre || 'sin nombre'}</p>
+                <p>Apellido: {apellido || 'sin apellido'}</p>
+                <p>Alias: {alias || 'sin alias'}</p>
+                <p>Email: {email || 'sin email'}</p>
+              </div>
+              <div className='item-botones'>
                 <button className='btn' onClick={handleEdit} value={id}>
                   Editar
-                </button>
-                <button className='btn' onClick={handlePrestar} value={id}>
-                  prestar / devolver
                 </button>
                 <button className='btn' onClick={handleDelete} value={id}>
                   Eliminar

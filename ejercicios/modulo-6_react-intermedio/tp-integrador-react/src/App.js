@@ -5,11 +5,13 @@ import Libro from './components/Libro';
 
 function App() {
   return (
-    <div className='App'>
-      <h1>My Books</h1>
-      <Persona />
-      <Categoria />
-      <Libro />
+    <div className='container'>
+      <h1 className='app-title'>My Books</h1>
+      <div className='app'>
+        <Categoria />
+        <Libro />
+        <Persona />
+      </div>
     </div>
   );
 }

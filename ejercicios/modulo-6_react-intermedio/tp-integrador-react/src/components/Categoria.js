@@ -18,7 +18,7 @@ const Categoria = () => {
   useEffect(async () => {
     try {
       const response = await axios.get('http://localhost:3005/categoria');
-      
+
       if (!response.data || response.data?.length == 0) return;
       dispatch({ type: 'FETCH LIST', payload: response.data });
     } catch (e) {
@@ -51,8 +51,6 @@ const Categoria = () => {
 
   const handleEdit = (e) => {};
 
-  const handlePrestar = (e) => {};
-
   return (
     <>
       <section className='section'>
@@ -62,7 +60,7 @@ const Categoria = () => {
 
         <form className='form' onSubmit={handleSubmit}>
           {/* Nombre de la categoria */}
-          <div className='form-control'>
+          <div className='form-control categoria-form'>
             <label htmlFor='categoria-nombre'>Nombre: </label>
             <input
               type='text'
@@ -78,19 +76,17 @@ const Categoria = () => {
         <h3>Listado de categorías</h3>
         {/* iterando sobre la lista de libros de la base de datos */}
         {state.categorias.map((unaCategoria) => {
-          const {
-            id,
-            nombre_categoria,
-          } = unaCategoria;
+          const { id, nombre_categoria } = unaCategoria;
           return (
             <div className='item' key={id || uuidv4()}>
-              <h5>{nombre_categoria || 'sin categoria'}</h5>
-              <div className='botones'>
+              <div className='item-datos'>
+                <h5 className='title-categoria'>
+                  {nombre_categoria || 'sin categoria'}
+                </h5>
+              </div>
+              <div className='item-botones'>
                 <button className='btn' onClick={handleEdit} value={id}>
                   Editar
-                </button>
-                <button className='btn' onClick={handlePrestar} value={id}>
-                  prestar / devolver
                 </button>
                 <button className='btn' onClick={handleDelete} value={id}>
                   Eliminar

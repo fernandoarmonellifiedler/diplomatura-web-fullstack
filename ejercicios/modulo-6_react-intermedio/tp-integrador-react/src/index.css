@@ -132,9 +132,18 @@ p {
 /*  global classes */
 
 /* section */
-.section,
+.App {
+  text-align: center;
+}
+
 .container {
   width: 90vw;
+  margin: 0 auto;
+  max-width: var(--max-width);
+}
+
+.section {
+  width: 30vw;
   margin: 0 auto;
   max-width: var(--max-width);
 }
