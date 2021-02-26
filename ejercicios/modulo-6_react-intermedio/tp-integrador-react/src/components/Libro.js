@@ -55,8 +55,12 @@ const Libro = () => {
   const handleDelete = (e) => {
     const libroId = e.target.value;
     dispatch({ type: 'REMOVE_ITEM', payload: libroId });
-    axios.delete('http://localhost:3005/libro/'+libroId);
+    axios.delete('http://localhost:3005/libro/' + libroId);
   };
+
+  const handleEdit = (e) => {};
+
+  const handlePrestar = (e) => {};
 
   return (
     <>
@@ -113,7 +117,7 @@ const Libro = () => {
           <button type='submit'>Agregar Libro</button>
         </form>
 
-        <h2>Listado de libros</h2>
+        <h3>Listado de libros</h3>
         {/* iterando sobre la lista de libros de la base de datos */}
         {state.libros.map((unLibro) => {
           const {
@@ -125,15 +129,21 @@ const Libro = () => {
           } = unLibro;
           return (
             <div className='item' key={id || uuidv4()}>
-              <h4>{nombre_libro || 'sin libro'}</h4>
+              <h5>{nombre_libro || 'sin libro'}</h5>
               <p>{descripcion || 'sin descripcion'}</p>
               <p>{categoria_id || 'sin categoria'}</p>
               <p>{persona_id || 'libro disponible'}</p>
-              <button className='btn'>Editar</button>
-              <button className='btn' onClick={handleDelete} value={id}>
-                Eliminar
-              </button>
-              <button className='btn'>prestar / devolver</button>
+              <div className='botones'>
+                <button className='btn' onClick={handleEdit} value={id}>
+                  Editar
+                </button>
+                <button className='btn' onClick={handlePrestar} value={id}>
+                  prestar / devolver
+                </button>
+                <button className='btn' onClick={handleDelete} value={id}>
+                  Eliminar
+                </button>
+              </div>
             </div>
           );
         })}

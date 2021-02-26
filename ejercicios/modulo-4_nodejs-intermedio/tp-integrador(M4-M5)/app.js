@@ -43,12 +43,13 @@ app.get('/categoria', async (req, res) => {
 
     const respuesta = await utilQuery(query);
 
-    res.status(200).send({ respuesta });
+    res.status(200).send( respuesta );
   } catch (e) {
     console.error(e.message);
-    res.status(413).send({ mensaje: e.message });
+    res.status(413).send(e.message);
   }
 });
+
 // GET para solo una categoria
 app.get('/categoria/:id', async (req, res) => {
   try {
@@ -61,10 +62,10 @@ app.get('/categoria/:id', async (req, res) => {
       throw new Error('Categoria no encontrada');
     }
 
-    res.status(200).send({ respuesta: respuesta });
+    res.status(200).send(respuesta);
   } catch (e) {
     console.error(e.message);
-    res.status(413).send({ mensaje: e.message });
+    res.status(413).send(e.message);
   }
 });
 // POST para agregar una categoria
@@ -101,7 +102,7 @@ app.post('/categoria', async (req, res) => {
     res.status(200).send({ id: respuesta.insertId, nombre: nombreUpperCased });
   } catch (e) {
     console.error(e.message);
-    res.status(413).send({ mensaje: e.message });
+    res.status(413).send(e.message);
   }
 });
 // DELETE una categoria
@@ -133,7 +134,7 @@ app.delete('/categoria/:id', async (req, res) => {
     res.status(200).send('La categoria se borró correctamente');
   } catch (e) {
     console.error(e.message);
-    res.status(413).send({ mensaje: e.message });
+    res.status(413).send(e.message);
   }
 });
 
@@ -148,7 +149,7 @@ app.get('/libro', async (req, res) => {
     res.status(200).send( respuesta );
   } catch (e) {
     console.error(e.message);
-    res.status(413).send({ mensaje: e.message });
+    res.status(413).send(e.message);
   }
 });
 // GET solo un libro
@@ -166,7 +167,7 @@ app.get('/libro/:id', async (req, res) => {
     res.status(200).send( respuesta );
   } catch (e) {
     console.error(e.message);
-    res.status(413).send({ mensaje: e.message });
+    res.status(413).send(e.message);
   }
 });
 // POST libro
@@ -255,7 +256,7 @@ app.post('/libro', async (req, res) => {
       });
   } catch (e) {
     console.error(e.message);
-    res.status(413).send({ mensaje: e.message });
+    res.status(413).send(e.message);
   }
 });
 // PUT libro
@@ -351,7 +352,7 @@ app.put('/libro/:id', async (req, res) => {
       });
   } catch (e) {
     console.error(e.message);
-    res.status(413).send({ mensaje: e.message });
+    res.status(413).send(e.message);
   }
 });
 // PUT libro prestar
@@ -401,7 +402,7 @@ app.put('/libro/prestar/:id', async (req, res) => {
     res.status(200).send('El libro se prestó correctamente');
   } catch (e) {
     console.error(e.message);
-    res.status(413).send({ mensaje: e.message });
+    res.status(413).send(e.message);
   }
 });
 // PUT libro devolver
@@ -440,7 +441,7 @@ app.put('/libro/devolver/:id', async (req, res) => {
     res.status(200).send('El libro se devolvió correctamente');
   } catch (e) {
     console.error(e.message);
-    res.status(413).send({ mensaje: e.message });
+    res.status(413).send(e.message);
   }
 });
 // DELETE libro
@@ -472,7 +473,7 @@ app.delete('/libro/:id', async (req, res) => {
     res.status(200).send('El libro se borró correctamente');
   } catch (e) {
     console.error(e.message);
-    res.status(413).send({ mensaje: e.message });
+    res.status(413).send(e.message);
   }
 });
 
@@ -484,10 +485,10 @@ app.get('/persona', async (req, res) => {
 
     const respuesta = await utilQuery(query);
 
-    res.status(200).send({ respuesta: respuesta });
+    res.status(200).send(respuesta);
   } catch (e) {
     console.error(e.message);
-    res.status(413).send({ mensaje: e.message });
+    res.status(413).send(e.message);
   }
 });
 // GET una sola persona
@@ -502,10 +503,10 @@ app.get('/persona/:id', async (req, res) => {
       throw new Error('No se encuentra esa persona');
     }
 
-    res.status(200).send({ respuesta: respuesta });
+    res.status(200).send(respuesta);
   } catch (e) {
     console.error(e.message);
-    res.status(413).send({ mensaje: e.message });
+    res.status(413).send(e.message);
   }
 });
 // POST persona
@@ -572,7 +573,7 @@ app.post('/persona', async (req, res) => {
       res.status(413).send('El email ya se encuentra registrado');
     } else {
       console.error(e.message);
-      res.status(413).send({ mensaje: e.message });
+      res.status(413).send(e.message);
     }
   }
 });
@@ -661,7 +662,7 @@ app.put('/persona/:id', async (req, res) => {
       res.status(413).send('El email ya se encuentra registrado');
     } else {
       console.error(e.message);
-      res.status(413).send({ mensaje: e.message });
+      res.status(413).send(e.message);
     }
   }
 });
@@ -696,7 +697,7 @@ app.delete('/persona/:id', async (req, res) => {
     res.status(200).send('El registro se borro correctamente');
   } catch (e) {
     console.error(e.message);
-    res.status(413).send({ mensaje: e.message });
+    res.status(413).send(e.message);
   }
 });
 

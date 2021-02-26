@@ -1,25 +1,25 @@
 export const reducer = (state, action) => {
   if (action.type === 'FETCH LIST') {
-    const nuevoLibros = action.payload;
+    const nuevaCategorias = action.payload;
     return {
       ...state,
-      libros: nuevoLibros,
+      categorias: nuevaCategorias,
     };
   }
 
   if (action.type === 'ADD_ITEM') {
-    const nuevoLibros = [...state.libros, action.payload];
+    const nuevaCategorias = [...state.categorias, action.payload];
     return {
       ...state,
-      libros: nuevoLibros,
+      categorias: nuevaCategorias,
     };
   }
 
   if (action.type === 'REMOVE_ITEM') {
     return {
       ...state,
-      libros: state.libros.filter((unLibro) => {
-        return unLibro.id !== Number(action.payload);
+      categorias: state.categorias.filter((unaCategoria) => {
+        return unaCategoria.id !== Number(action.payload);
       }),
     };
   }
