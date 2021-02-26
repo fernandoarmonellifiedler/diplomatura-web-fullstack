@@ -4,18 +4,18 @@
 import Persona from './components/Persona';
 import Categoria from './components/Categoria';
 import Libro from './components/Libro';
-import Navbar from './components/Navbar'
 
 function App() {
   return (
     <div className='container'>
       <h1 className='app-title'>My Books</h1>
-      <Navbar />
+      
       <div className='app'>
         <Categoria />
         <Libro />
         <Persona />
       </div>
+      <div id='show-list'></div>
     </div>
   );
 }

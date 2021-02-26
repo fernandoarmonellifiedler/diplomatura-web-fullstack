@@ -5,14 +5,14 @@ const Navbar = () => {
     <nav className='navbar'>
       <ul className='navbar-ul'>
         <li>
-          <a href="/" className='nav-botones'>Home</a>
+          <a href="/" className='nav-botones'>Volver</a>
         </li>
-        <li>
+        {/* <li>
           <a href="/about" className='nav-botones'>About</a>
         </li>
         <li>
           <a href="/people" className='nav-botones'>People</a>
-        </li>
+        </li> */}
       </ul>
     </nav>
   );

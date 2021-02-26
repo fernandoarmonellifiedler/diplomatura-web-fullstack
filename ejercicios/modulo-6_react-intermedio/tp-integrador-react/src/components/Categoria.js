@@ -1,11 +1,15 @@
 import React, { useState, useEffect, useReducer } from 'react';
+import ReactDOM from 'react-dom';
 import axios from 'axios';
 import { reducer } from '../reducers/categoriaReducer'; // import reducer
 import { v4 as uuidv4 } from 'uuid'; // genera id unicos
+import CategoriaLibros from './CategoriaLibros';
 
 // reducer: default state
 const defaultState = {
   categorias: [],
+  categoriaLibros: [],
+  libros: [],
 };
 
 const Categoria = () => {
@@ -21,11 +25,15 @@ const Categoria = () => {
 
       if (!response.data || response.data?.length == 0) return;
       dispatch({ type: 'FETCH_LIST', payload: response.data });
+    
+      const response2 = await axios.get('http://localhost:3005/libro');
+      if (!response2.data || response2.data?.length == 0) return;
+      dispatch({ type: 'FETCH_BOOK_LIST', payload: response2.data });
     } catch (e) {
       console.log(e);
     }
   }, []);
-  
+
   // envío de formulario
   const handleSubmit = (e) => {
     e.preventDefault(); // evita aguegar campos vacios
@@ -50,22 +58,22 @@ const Categoria = () => {
     axios.delete('http://localhost:3005/categoria/' + categoriaId);
   };
 
-  const handleEdit = (e) => {
-    
-    
-  };
+  const handleEdit = (e) => {};
 
-  const handleVerMas = async (e) => {
-    try {
-      const categoriaId = e.target.value;
-      // const response = await axios.get('http://localhost:3005/categoria/'+categoriaId);
-      // console.log(response.data.length);
-      // if (!response.data || response.data?.length == 0) return;
-      dispatch({ type: 'FETCH_ONE', payload: categoriaId });
-    } catch (e) {
-      console.log(e);
-    }
+  const handleVerMas = (e) => {
+    const categoriaId = e.target.value;
+    dispatch({ type: 'FETCH_ONE', payload: categoriaId });
+    //console.log(state);
+    return (
+      ReactDOM.render(
+        <>
+          <CategoriaLibros defaultState={state} />
+        </>,
+        document.getElementById('show-list')
+      )
+    )
   };
+  //console.log(state.categoriaLibros);
 
   return (
     <>

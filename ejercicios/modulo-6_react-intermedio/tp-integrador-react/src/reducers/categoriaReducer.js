@@ -7,14 +7,20 @@ export const reducer = (state, action) => {
     };
   }
 
-  if (action.type === 'FETCH_ONE') {
-    const categoriaId = action.payload;
-    console.log(categoriaId);
-    console.log(state.libros);
+  if (action.type === 'FETCH_BOOK_LIST') {
+    const nuevoLibros = action.payload;
     return {
       ...state,
-      libros: state.libros.filter((unLibro) => {
-        return unLibro.id === categoriaId;
+      libros: nuevoLibros,
+    };
+  }
+
+  if (action.type === 'FETCH_ONE') {
+    const categoriaId = action.payload;
+    return {
+      ...state,
+      categoriaLibros: state.libros.filter((unLibro) => {
+        return unLibro.categoria_id === Number(categoriaId);
       }),
     };
   }
