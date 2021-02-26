@@ -106,7 +106,7 @@ p {
   margin-bottom: 1.25rem;
   color: var(--clr-grey-5);
 }
-@media screen and (min-width: 800px) {
+/* @media screen and (min-width: 800px) {
   h1 {
     font-size: 4rem;
   }
@@ -128,36 +128,38 @@ p {
   h4 {
     line-height: 1;
   }
-}
+} */
+
 /*  global classes */
-
-/* section */
-.App {
-  text-align: center;
-}
-
 .container {
+  text-align: center;
+  margin-top: 5rem;
   width: 90vw;
   margin: 0 auto;
   max-width: var(--max-width);
 }
 
-.section {
-  width: 30vw;
-  margin: 0 auto;
-  max-width: var(--max-width);
+.app {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: space-evenly;
 }
 
-@media screen and (min-width: 992px) {
+.app-title {
+  margin-top: 2rem;
+}
+
+.section {
+  width: 30%;
+  margin: 0 auto;
+}
+
+/* @media screen and (min-width: 992px) {
   .section {
     width: 95vw;
   }
-}
+} */
 
-.container {
-  text-align: center;
-  margin-top: 5rem;
-}
 .btn {
   display: inline-block;
   background: var(--clr-primary-5);
@@ -183,12 +185,12 @@ p {
   display: flex;
   justify-content: space-between;
   max-width: var(--fixed-width);
-  margin: .8rem auto;
+  margin: 0.8rem auto;
   align-items: center;
   border-radius: var(--radius);
+  padding: 0.5rem 0.5rem;
 }
 
-.item button,
 .item a {
   background: transparent;
   border-color: transparent;
@@ -198,13 +200,15 @@ p {
 }
 
 .item button {
+  background: transparent;
+  border-color: transparent;
+  color: var(--clr-primary-5);
+  letter-spacing: var(--spacing);
+  cursor: pointer;
   margin-top: 0;
-  font-size: .8rem;
+  font-size: 0.8rem;
 }
 
-.item {
-  padding: .5rem 2rem;
-}
 .item h5 {
   margin-bottom: 0;
 }
@@ -212,11 +216,20 @@ p {
   margin-bottom: 0;
 }
 
-.botones {
+.item-datos {
+  width: 100%;
+  text-align: left;
+  margin-left: 1rem;
+}
+
+.item-botones {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  align-items: center;
+  width: 40%;
+}
+
+.title-categoria {
 }
 
 .modal {
@@ -239,9 +252,10 @@ p {
   background: var(--clr-white);
   max-width: var(--fixed-width);
   margin: 0 auto;
-  margin-bottom: 4rem;
+  margin-bottom: 2rem;
   padding: 1rem 2rem;
   border-radius: var(--radius);
+  height: 14rem;
 }
 .form input {
   background: var(--clr-grey-10);
@@ -249,12 +263,18 @@ p {
   border-radius: var(--radius);
   padding: 0.25rem 0.5rem;
 }
+
+/* .categoria-form {
+  padding-bottom: 6rem;
+} */
+
 .form-control {
   margin: 0.5rem 0;
   display: grid;
   grid-template-columns: 100px 1fr;
   align-items: center;
 }
+
 .form button {
   display: inline-block;
   background: var(--clr-black);
@@ -262,11 +282,26 @@ p {
   border-color: transparent;
   margin-top: 1rem;
   letter-spacing: var(--spacing);
-  padding: 0.15rem 0.25rem;
+  padding: 0.15rem 1rem;
   text-transform: capitalize;
   border-radius: var(--radius);
   cursor: pointer;
 }
+
+nav {
+  background-color: var(--clr-grey-9);
+  max-width: var(--fixed-width);
+  margin: 0 auto;
+  padding: .5rem ;
+  border-radius: var(--radius);
+}
+
+.navbar-ul {
+  display: flex;
+  justify-content: space-between;
+  margin: auto 1rem ;
+}
+
 .nav-links {
   max-width: var(--fixed-width);
   margin: 0 auto;
@@ -277,6 +312,19 @@ p {
 .nav-links a {
   color: var(--clr-grey-5);
 }
+
+.nav-botones {
+  display: inline-block;
+  background: var(--clr-black);
+  color: var(--clr-white);
+  border-color: transparent;
+  letter-spacing: var(--spacing);
+  padding: 0.15rem 1rem;
+  text-transform: capitalize;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
 .users {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));

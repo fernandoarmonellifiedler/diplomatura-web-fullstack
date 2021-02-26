@@ -1,12 +1,28 @@
-import './App.css';
+// import './App.css';
 // import React, { useState, useEffect } from 'react';
 // import axios from 'axios';
 import Persona from './components/Persona';
 import Categoria from './components/Categoria';
 import Libro from './components/Libro';
+import Navbar from './components/Navbar'
 
 function App() {
-  // const [state, setState] = useState({
+  return (
+    <div className='container'>
+      <h1 className='app-title'>My Books</h1>
+      <Navbar />
+      <div className='app'>
+        <Categoria />
+        <Libro />
+        <Persona />
+      </div>
+    </div>
+  );
+}
+
+export default App;
+
+// const [state, setState] = useState({
   //   categorias: [],
   //   libros: [],
   //   personas: [],
@@ -27,17 +43,3 @@ function App() {
   //     console.log(e);
   //   }
   // }, []);
-
-  return (
-    <div className='container'>
-      <h1 className='app-title'>My Books</h1>
-      <div className='app'>
-        <Categoria />
-        <Libro />
-        <Persona />
-      </div>
-    </div>
-  );
-}
-
-export default App;

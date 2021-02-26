@@ -128,6 +128,7 @@ const Persona = () => {
                 <p>Apellido: {apellido || 'sin apellido'}</p>
                 <p>Alias: {alias || 'sin alias'}</p>
                 <p>Email: {email || 'sin email'}</p>
+                <p>Libros Prestados: || Sin Libros</p>
               </div>
               <div className='item-botones'>
                 <button className='btn' onClick={handleEdit} value={id}>
