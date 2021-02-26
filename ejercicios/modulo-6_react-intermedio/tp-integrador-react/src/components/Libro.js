@@ -23,7 +23,7 @@ const Libro = () => {
     try {
       const response = await axios.get('http://localhost:3005/libro');
       if (!response.data || response.data?.length == 0) return;
-      dispatch({ type: 'FETCH LIST', payload: response.data });
+      dispatch({ type: 'FETCH_LIST', payload: response.data });
     } catch (e) {
       console.log(e);
     }

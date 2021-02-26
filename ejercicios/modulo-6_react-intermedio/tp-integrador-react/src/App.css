@@ -218,6 +218,8 @@ p {
 
 .item-datos {
   width: 100%;
+  text-align: left;
+  margin-left: 1rem;
 }
 
 .item-botones {
@@ -228,8 +230,6 @@ p {
 }
 
 .title-categoria {
-  text-align: left;
-  margin-left: 1rem;
 }
 
 .modal {

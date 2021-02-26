@@ -1,5 +1,5 @@
 export const reducer = (state, action) => {
-  if (action.type === 'FETCH LIST') {
+  if (action.type === 'FETCH_LIST') {
     const nuevaPersona = action.payload;
     return {
       ...state,

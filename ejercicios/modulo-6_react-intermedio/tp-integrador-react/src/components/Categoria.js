@@ -20,11 +20,12 @@ const Categoria = () => {
       const response = await axios.get('http://localhost:3005/categoria');
 
       if (!response.data || response.data?.length == 0) return;
-      dispatch({ type: 'FETCH LIST', payload: response.data });
+      dispatch({ type: 'FETCH_LIST', payload: response.data });
     } catch (e) {
       console.log(e);
     }
   }, []);
+  
   // envío de formulario
   const handleSubmit = (e) => {
     e.preventDefault(); // evita aguegar campos vacios
@@ -49,7 +50,22 @@ const Categoria = () => {
     axios.delete('http://localhost:3005/categoria/' + categoriaId);
   };
 
-  const handleEdit = (e) => {};
+  const handleEdit = (e) => {
+    
+    
+  };
+
+  const handleVerMas = async (e) => {
+    try {
+      const categoriaId = e.target.value;
+      // const response = await axios.get('http://localhost:3005/categoria/'+categoriaId);
+      // console.log(response.data.length);
+      // if (!response.data || response.data?.length == 0) return;
+      dispatch({ type: 'FETCH_ONE', payload: categoriaId });
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   return (
     <>
@@ -83,6 +99,9 @@ const Categoria = () => {
                 <h5 className='title-categoria'>
                   {nombre_categoria || 'sin categoria'}
                 </h5>
+                <button onClick={handleVerMas} value={id}>
+                  Ver Libros
+                </button>
               </div>
               <div className='item-botones'>
                 <button className='btn' onClick={handleEdit} value={id}>

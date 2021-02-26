@@ -49,7 +49,6 @@ app.get('/categoria', async (req, res) => {
     res.status(413).send(e.message);
   }
 });
-
 // GET para solo una categoria
 app.get('/categoria/:id', async (req, res) => {
   try {
