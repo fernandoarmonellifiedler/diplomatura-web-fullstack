@@ -3,80 +3,83 @@ import ReactDOM from 'react-dom';
 import axios from 'axios';
 import { reducer } from '../reducers/categoriaReducer'; // import reducer
 import { v4 as uuidv4 } from 'uuid'; // genera id unicos
-import CategoriaLibros from './CategoriaLibros';
+import CategoriaModal from './CategoriaModal';
 
 // reducer: default state
 const defaultState = {
   categorias: [],
   categoriaLibros: [],
   libros: [],
+  isModalOpen: false,
 };
 
 const Categoria = () => {
   const [nombre, setNombre] = useState('');
-
+  // const [showModal, setShowModal] = useState('');
   // useReducer
   const [state, dispatch] = useReducer(reducer, defaultState);
 
-  // buscar lista de categorias en BD
   useEffect(async () => {
     try {
       const response = await axios.get('http://localhost:3005/categoria');
 
       if (!response.data || response.data?.length == 0) return;
       dispatch({ type: 'FETCH_LIST', payload: response.data });
-    
-      const response2 = await axios.get('http://localhost:3005/libro');
-      if (!response2.data || response2.data?.length == 0) return;
-      dispatch({ type: 'FETCH_BOOK_LIST', payload: response2.data });
     } catch (e) {
       console.log(e);
     }
   }, []);
 
-  // envío de formulario
   const handleSubmit = (e) => {
-    e.preventDefault(); // evita aguegar campos vacios
+    e.preventDefault();
     if (nombre) {
       const nuevaCategoria = {
         nombre_categoria: nombre.toUpperCase(),
       };
-      // agregar categoria al state
       dispatch({ type: 'ADD_ITEM', payload: nuevaCategoria });
-      // axios POST
       axios.post('http://localhost:3005/categoria', nuevaCategoria);
-      // borrar campos luego de agregar el item
       setNombre('');
     } else {
       window.alert('No puedes ingresar valores en blanco');
     }
   };
 
-  const handleDelete = (e) => {
-    const categoriaId = e.target.value;
-    dispatch({ type: 'REMOVE_ITEM', payload: categoriaId });
-    axios.delete('http://localhost:3005/categoria/' + categoriaId);
+  const handleDelete = async (e) => {
+    try {
+      const categoriaId = e.target.value;
+      const response = await axios.delete(
+        'http://localhost:3005/categoria/' + categoriaId
+      );
+      if (!response.data || response.data?.length == 0) return;
+      dispatch({ type: 'REMOVE_ITEM', payload: categoriaId });
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   const handleEdit = (e) => {};
 
-  const handleVerMas = (e) => {
+  const handleVerMas = async (e) => {
     const categoriaId = e.target.value;
-    dispatch({ type: 'FETCH_ONE', payload: categoriaId });
-    //console.log(state);
-    return (
-      ReactDOM.render(
-        <>
-          <CategoriaLibros defaultState={state} />
-        </>,
-        document.getElementById('show-list')
-      )
-    )
+    if (categoriaId) {
+      dispatch({ type: 'SWITCH_MODAL', payload: state.isModalOpen });
+      try {
+        const response = await axios.get('http://localhost:3005/libro');
+        if (!response.data || response.data?.length == 0) return;
+        dispatch({ type: 'FETCH_BOOK_LIST', payload: response.data });
+        dispatch({ type: 'FETCH_ONE', payload: categoriaId });
+      } catch (e) {
+        console.log(e);
+      }
+    } else {
+      dispatch({ type: 'SWITCH_MODAL', payload: state.isModalOpen });
+    }
   };
-  //console.log(state.categoriaLibros);
 
   return (
     <>
+      {state.isModalOpen && <CategoriaModal props={state} />}
+
       <section className='section'>
         <header>
           <h2>Agregar categoría</h2>
@@ -107,6 +110,7 @@ const Categoria = () => {
                 <h5 className='title-categoria'>
                   {nombre_categoria || 'sin categoria'}
                 </h5>
+                <p>Categoria N°{id}</p>
                 <button onClick={handleVerMas} value={id}>
                   Ver Libros
                 </button>

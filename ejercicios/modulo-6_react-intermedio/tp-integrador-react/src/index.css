@@ -292,14 +292,14 @@ nav {
   background-color: var(--clr-grey-9);
   max-width: var(--fixed-width);
   margin: 0 auto;
-  padding: .5rem ;
+  padding: 0.5rem;
   border-radius: var(--radius);
 }
 
 .navbar-ul {
   display: flex;
   justify-content: space-between;
-  margin: auto 1rem ;
+  margin: auto 1rem;
 }
 
 .nav-links {
@@ -389,4 +389,25 @@ nav {
   padding: 0.25rem 0.5rem;
   text-transform: capitalize;
   cursor: pointer;
+}
+
+.cat-modal {
+  position: fixed;
+  width: 30rem;
+  height: auto;
+  margin: 0 auto;
+  background: var(--clr-white);
+  left: 30rem;
+  top: 8rem;
+  border: 2px solid var(--clr-primary-10);
+}
+
+.cat-modal h2 {
+  margin-top: 1rem;
+}
+
+.cat-modal-item {
+  border: 2px solid var(--clr-grey-10);
+  border-radius: var(--radius);
+  margin: 1rem
 }

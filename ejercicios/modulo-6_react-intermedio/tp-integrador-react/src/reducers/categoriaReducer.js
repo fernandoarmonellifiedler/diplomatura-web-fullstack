@@ -9,6 +9,7 @@ export const reducer = (state, action) => {
 
   if (action.type === 'FETCH_BOOK_LIST') {
     const nuevoLibros = action.payload;
+    //console.log(nuevoLibros);
     return {
       ...state,
       libros: nuevoLibros,
@@ -16,11 +17,12 @@ export const reducer = (state, action) => {
   }
 
   if (action.type === 'FETCH_ONE') {
-    const categoriaId = action.payload;
+    const categoriaId = Number(action.payload);
     return {
       ...state,
       categoriaLibros: state.libros.filter((unLibro) => {
-        return unLibro.categoria_id === Number(categoriaId);
+        //console.log(unLibro.categoria_id, unLibro.categoria_id === categoriaId);
+        return unLibro.categoria_id === categoriaId;
       }),
     };
   }
@@ -41,5 +43,14 @@ export const reducer = (state, action) => {
       }),
     };
   }
+
+  if (action.type === 'SWITCH_MODAL') {
+    const modalState = !action.payload;
+    return {
+      ...state,
+      isModalOpen: modalState,
+    };
+  }
+
   throw new Error('no matching action type');
 };
