@@ -1,7 +1,6 @@
 // import './App.css';
 // import React, { useState, useEffect } from 'react';
 import React, { useReducer } from 'react';
-import { reducer } from './reducers/appReducer';
 import axios from 'axios';
 import Persona from './components/Persona';
 import Categoria from './components/Categoria';
