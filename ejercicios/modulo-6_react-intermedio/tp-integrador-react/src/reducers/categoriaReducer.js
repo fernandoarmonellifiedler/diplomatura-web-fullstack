@@ -60,5 +60,21 @@ export const reducer = (state, action) => {
     };
   }
 
+  if (action.type === 'SWITCH_EDIT_MODAL') {
+    const modalState = !action.payload;
+    return {
+      ...state,
+      categoriaEditModal: modalState,
+    };
+  }
+
+  // if (action.type === 'CAMBIO_ESTADO') {
+  //   const estado = !action.payload;
+  //   return {
+  //     ...state,
+  //     cambioEstado: estado,
+  //   };
+  // }
+
   throw new Error('no matching action type');
 };

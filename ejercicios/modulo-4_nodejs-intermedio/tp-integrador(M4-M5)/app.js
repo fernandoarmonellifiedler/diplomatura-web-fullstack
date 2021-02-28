@@ -137,6 +137,49 @@ app.delete('/categoria/:id', async (req, res) => {
   }
 });
 
+// PUT categoria
+app.put('/categoria/:id', async (req, res) => {
+  try {
+    // valida que se ingresen todos los datos
+    if (req.body.nombre_categoria == '') {
+      throw new Error("El campo 'Nombre' no puede estar vacio");
+    }
+
+    // // Valida que exista la categoria
+    // let query = 'SELECT * FROM categoria WHERE id = ?';
+
+    // let respuesta = await utilQuery(query, [req.body.id]);
+    // console.log(respuesta);
+
+    // if (respuesta.length == 0) {
+    //   throw new Error('No existe la categoria indicada!');
+    // }
+
+    // declara variables
+    const nombre_categoria = req.body.nombre_categoria.toUpperCase();
+
+    // update de la BD
+    query = 'UPDATE categoria SET nombre_categoria = ? WHERE id = ?';
+
+    respuesta = await utilQuery(query, [nombre_categoria, req.params.id]);
+
+    // toma id del libro para agregar al res.send
+    query = 'SELECT id FROM categoria WHERE nombre_categoria = ?';
+    respuesta = await utilQuery(query, [nombre_categoria]);
+
+    // send
+    res
+      .status(200)
+      .send({
+        id: respuesta[0].id,
+        nombre: nombre_categoria,
+      });
+  } catch (e) {
+    console.error(e.message);
+    res.status(413).send(e.message);
+  }
+});
+
 /* ===== 2) LIBRO ===== */
 // GET todos los libros
 app.get('/libro', async (req, res) => {

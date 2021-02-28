@@ -229,9 +229,6 @@ p {
   width: 40%;
 }
 
-.title-categoria {
-}
-
 .modal {
   position: absolute;
   top: 2rem;
@@ -263,10 +260,6 @@ p {
   border-radius: var(--radius);
   padding: 0.25rem 0.5rem;
 }
-
-/* .categoria-form {
-  padding-bottom: 6rem;
-} */
 
 .form-control {
   margin: 0.5rem 0;
@@ -406,8 +399,38 @@ nav {
   margin-top: 1rem;
 }
 
+.cat-modal h3 {
+  margin-top: 1rem;
+}
+
 .cat-modal-item {
   border: 2px solid var(--clr-grey-10);
   border-radius: var(--radius);
   margin: 1rem
+}
+
+.cat-modal-form {
+  height: auto;
+}
+
+.cat-modal-btn {
+  position: relative;
+  left: 12rem;
+  top: -1.5rem;
+}
+
+.cat-modal-h3 {
+  margin-bottom: -2rem;
+  }
+
+
+.cat-edit-btn {
+  position: relative;
+  left: 12rem;
+  top: .4rem;
+  
+}
+
+.cat-edit-h3 {
+margin-bottom: -4rem;
 }
