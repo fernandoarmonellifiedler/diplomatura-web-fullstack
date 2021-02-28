@@ -20,7 +20,7 @@ export const reducer = (state, action) => {
     const categoriaId = Number(action.payload);
     return {
       ...state,
-      categoriaLibros: state.libros.filter((unLibro) => {
+      librosEnCategoria: state.libros.filter((unLibro) => {
         //console.log(unLibro.categoria_id, unLibro.categoria_id === categoriaId);
         return unLibro.categoria_id === categoriaId;
       }),
@@ -28,6 +28,14 @@ export const reducer = (state, action) => {
   }
 
   if (action.type === 'ADD_ITEM') {
+    const nuevaCategorias = [...state.categorias, action.payload];
+    return {
+      ...state,
+      categorias: nuevaCategorias,
+    };
+  }
+
+  if (action.type === 'EDIT_ITEM') {
     const nuevaCategorias = [...state.categorias, action.payload];
     return {
       ...state,
@@ -48,7 +56,7 @@ export const reducer = (state, action) => {
     const modalState = !action.payload;
     return {
       ...state,
-      isModalOpen: modalState,
+      categoriaModal: modalState,
     };
   }
 

@@ -1,21 +1,20 @@
 import React, { useState, useEffect, useReducer } from 'react';
 import { reducer } from '../reducers/categoriaReducer'; // import reducer
-import { v4 as uuidv4 } from 'uuid'; // genera id unicos
 
-const CategoriaModal = ({props}) => {
+const CategoriaModal = ({fullState}, handleModal) => {
 
   return (
     <>
       <section className='cat-modal'>
         <header>
           <h2>Libros en categoria:</h2>
-          {/* <button className='btn' onClick={handleClick}>
+          {/* <button className='btn' onClick={() => handleModal}>
             Cerrar
           </button> */}
         </header>
 
         {/* iterando sobre la lista de libros de la BD */}
-        {props.categoriaLibros.map((unLibro) => {
+        {fullState.librosEnCategoria.map((unLibro) => {
           const {
             id,
             nombre_libro,
@@ -25,7 +24,7 @@ const CategoriaModal = ({props}) => {
           } = unLibro;
 
           return (
-            <div className='item cat-modal-item' key={id || uuidv4()}>
+            <div className='item cat-modal-item' key={id}>
               <div className='item-datos'>
                 <p>Titulo: {nombre_libro || 'sin nombre'}</p>
                 <p>Descripción: {descripcion || 'sin descripcion'}</p>

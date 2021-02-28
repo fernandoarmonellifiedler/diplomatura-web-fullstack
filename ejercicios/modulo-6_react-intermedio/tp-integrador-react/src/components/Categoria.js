@@ -8,14 +8,13 @@ import CategoriaModal from './CategoriaModal';
 // reducer: default state
 const defaultState = {
   categorias: [],
-  categoriaLibros: [],
+  librosEnCategoria: [],
   libros: [],
-  isModalOpen: false,
+  categoriaModal: false,
 };
 
 const Categoria = () => {
   const [nombre, setNombre] = useState('');
-  // const [showModal, setShowModal] = useState('');
   // useReducer
   const [state, dispatch] = useReducer(reducer, defaultState);
 
@@ -62,7 +61,7 @@ const Categoria = () => {
   const handleVerMas = async (e) => {
     const categoriaId = e.target.value;
     if (categoriaId) {
-      dispatch({ type: 'SWITCH_MODAL', payload: state.isModalOpen });
+      dispatch({ type: 'SWITCH_MODAL', payload: state.categoriaModal });
       try {
         const response = await axios.get('http://localhost:3005/libro');
         if (!response.data || response.data?.length == 0) return;
@@ -72,13 +71,13 @@ const Categoria = () => {
         console.log(e);
       }
     } else {
-      dispatch({ type: 'SWITCH_MODAL', payload: state.isModalOpen });
+      dispatch({ type: 'SWITCH_MODAL', payload: state.categoriaModal });
     }
   };
 
   return (
     <>
-      {state.isModalOpen && <CategoriaModal props={state} />}
+      {state.categoriaModal && <CategoriaModal fullState={state} />}
 
       <section className='section'>
         <header>
@@ -130,5 +129,7 @@ const Categoria = () => {
     </>
   );
 };
+
+
 
 export default Categoria;
