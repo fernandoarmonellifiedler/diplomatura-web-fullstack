@@ -146,14 +146,13 @@ app.put('/categoria/:id', async (req, res) => {
     }
 
     // // Valida que exista la categoria
-    // let query = 'SELECT * FROM categoria WHERE id = ?';
+    let query = 'SELECT * FROM categoria WHERE id = ?';
 
-    // let respuesta = await utilQuery(query, [req.body.id]);
-    // console.log(respuesta);
+    let respuesta = await utilQuery(query, [req.params.id]);
 
-    // if (respuesta.length == 0) {
-    //   throw new Error('No existe la categoria indicada!');
-    // }
+    if (respuesta.length != 0) {
+      throw new Error('Ya existe la categoria indicada!');
+    }
 
     // declara variables
     const nombre_categoria = req.body.nombre_categoria.toUpperCase();

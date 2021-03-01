@@ -84,14 +84,53 @@ const Libro = () => {
   // ADD nuevo libro
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // valida que exista la categoria
+    try {
+      const response = await axios.get('http://localhost:3005/categoria');
+      if (!response.data || response.data?.length == 0) return;
+      dispatch({ type: 'FETCH_CATEGORIA_LIST', payload: response.data });
+      const result = response.data.filter(
+        (unaCategoria) => unaCategoria.id == categoria
+      );
+      if (result.length == 0) {
+        return window.alert('Esa categoria no existe');
+      }
+    } catch (e) {
+      console.log(e);
+    }
+    // valida que exista la persona
+    try {
+      const response = await axios.get('http://localhost:3005/persona');
+      if (!response.data || response.data?.length == 0) return;
+      dispatch({ type: 'FETCH_PERSONA_LIST', payload: response.data });
+      const result = response.data.filter(
+        (unaPersona) => unaPersona.id == persona 
+      );
+      if (result.length == 0 && persona != '') {
+        return window.alert('Esa persona no existe');
+      }
+
+    } catch (e) {
+      console.log(e);
+    }
+
     try {
       if (nombre && descripcion) {
         const nuevoLibro = {
           nombre_libro: nombre.toUpperCase(),
           descripcion: descripcion.toUpperCase(),
           categoria_id: categoria,
-          persona_id: persona,
+          persona_id: persona || null,
         };
+
+        // valida que el nombre no exista
+        const result = state.libros.filter(
+          (unLibro) => unLibro.nombre_libro == nuevoLibro.nombre_libro 
+        );
+        if (result.length != 0) {
+          return window.alert('Esa libro ya existe');
+        }
+
         const response = await axios.post(
           'http://localhost:3005/libro',
           nuevoLibro
@@ -115,6 +154,11 @@ const Libro = () => {
   const handleDelete = async (e) => {
     const libroId = e.target.value;
     try {
+      const unLibro = state.libros.find(unLibro => unLibro.id == libroId)
+    const result = state.personas.find(unaPersona => unaPersona.id == unLibro.persona_id)
+    if (result) {
+      return window.alert('Debes devolver el libro para poder borrarlo')
+    }
       const response = await axios.delete(
         'http://localhost:3005/libro/' + libroId
       );
@@ -193,6 +237,7 @@ const Libro = () => {
           listaLibros={state.libros}
           handleRender={handleRender}
           handleModalPrestar={handleModalPrestar}
+          listaPersonas={state.personas}
         />
       )}
 
@@ -385,7 +430,7 @@ const LibroEdit = (props) => {
   );
 };
 
-// COMPONENTE MODAL PARA PRESTAR/DEVOLVER
+// COMPONENTE MODAL PARA PRESTAR
 const LibroPrestar = (props) => {
   const [nombre, setNombre] = useState('');
   const [descripcion, setDescripcion] = useState('');
@@ -407,6 +452,17 @@ const LibroPrestar = (props) => {
           categoria_id: libroSelected.categoria_id,
           persona_id: persona,
         };
+
+        const unaPersona = props.listaPersonas.find(unaPersona => unaPersona.id == persona)
+        if (!unaPersona) {
+          return window.alert('Ese Id de persona no existe')
+        }
+
+        const libroStatus = props.listaLibros.find(unLibro => unLibro.persona_id != null)
+        if (libroStatus) {
+          return window.alert('Este libro ya se encuentra prestado!')
+        }
+
         const response = await axios.put(
           'http://localhost:3005/libro/prestar/' + props.libroId,
           editLibro

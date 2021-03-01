@@ -58,6 +58,14 @@ const Categoria = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      if (
+        state.categorias.find(
+          (unaCategoria) =>
+            unaCategoria.nombre_categoria == nombre.toUpperCase()
+        )
+      ) {
+        return window.alert('Esa categoria ya existe!');
+      }
       if (nombre) {
         const addCategoria = {
           nombre_categoria: nombre.toUpperCase(),
@@ -79,6 +87,19 @@ const Categoria = () => {
   };
   // DELETE categoria
   const handleDelete = async (e) => {
+    try {
+      const response = await axios.get('http://localhost:3005/libro');
+      if (
+        response.data.find(
+          (unLibro) =>
+            unLibro.categoria_id == e.target.value
+        )
+      ) {
+        return window.alert('Esa categoria aun tiene libros asociados!');
+      }
+    } catch (e) {
+      console.log(e);
+    }
     try {
       const categoriaId = e.target.value;
       const response = await axios.delete(
@@ -193,10 +214,24 @@ const CategoriaEdit = (props) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      const response = await axios.get('http://localhost:3005/categoria');
+      if (
+        response.data.find(
+          (unaCategoria) =>
+            unaCategoria.nombre_categoria == nombre.toUpperCase()
+        )
+      ) {
+        return window.alert('Esa categoria ya existe!');
+      }
+    } catch (e) {
+      console.log(e);
+    }
+    try {
       if (nombre) {
         const editCategoria = {
           nombre_categoria: nombre.toUpperCase(),
         };
+        
         const response = await axios.put(
           'http://localhost:3005/categoria/' + props.catId,
           editCategoria
@@ -248,10 +283,7 @@ const CategoriaLibrosModal = (props) => {
       <section className='cat-modal'>
         <header>
           <h3 className='cat-modal-h3'>Libros en categoria:</h3>
-          <button
-            className='btn cat-modal-btn'
-            onClick={props.handleVerMas}
-          >
+          <button className='btn cat-modal-btn' onClick={props.handleVerMas}>
             X
           </button>
         </header>

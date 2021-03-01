@@ -70,6 +70,14 @@ const Persona = () => {
           alias: alias.toUpperCase(),
           email: email.toUpperCase(),
         };
+
+        const findEmail = state.personas.find(
+          (unaPersona) => unaPersona.email == nuevaPersona.email
+        );
+        if (findEmail) {
+          return window.alert('Ese email ya se encuentra registrado!');
+        }
+
         const response = await axios.post(
           'http://localhost:3005/persona',
           nuevaPersona
@@ -82,7 +90,7 @@ const Persona = () => {
         setEmail('');
         handleRender();
       } else {
-        window.alert('No puedes ingresar valores en blanco');
+        window.alert('Todos los campos son obligatorios');
       }
     } catch (e) {
       console.log(e);
@@ -93,6 +101,17 @@ const Persona = () => {
   const handleDelete = async (e) => {
     const personaId = e.target.value;
     try {
+      const listaLibros = await axios.get('http://localhost:3005/libro');
+      if (!listaLibros.data || listaLibros.data?.length == 0) return;
+      dispatch({ type: 'FETCH_LIBRO_LIST', payload: listaLibros.data });
+      
+      const findLibro = listaLibros.data.find(
+        (unLibro) => unLibro.persona_id == personaId
+      );
+      if (findLibro) {
+        return window.alert('Debes devolver el libro para poder borrar este usuario');
+      }
+
       const response = await axios.delete(
         'http://localhost:3005/persona/' + personaId
       );
@@ -124,6 +143,7 @@ const Persona = () => {
           listaPersonas={state.personas}
           handleRender={handleRender}
           handleModalEdit={handleModalEdit}
+          listaPersonas={state.personas}
         />
       )}
       <section className='section'>
@@ -237,9 +257,17 @@ const PersonaEdit = (props) => {
         const editPersona = {
           nombre: nombre,
           apellido: apellido,
-          email: email,
+          email: email.toUpperCase(),
           alias: alias,
         };
+
+        const findEmail = props.listaPersonas.filter(
+          (unaPersona) => unaPersona.email == editPersona.email
+        );
+        if (findEmail.length != 0) {
+          return window.alert('Ese email ya se encuentra registrado!');
+        }
+
         const response = await axios.put(
           'http://localhost:3005/persona/' + props.personaId,
           editPersona
