@@ -19,6 +19,17 @@ const Persona = () => {
   const [state, dispatch] = useReducer(reducer, defaultState); // useReducer
   const [id, setId] = useState('');
 
+  // funcion para re-renderizar componentes
+  const handleRender = async () => {
+    try {
+      const response = await axios.get('http://localhost:3005/persona');
+      if (!response.data || response.data?.length == 0) return;
+      dispatch({ type: 'FETCH_LIST', payload: response.data });
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   // buscar lista de personas en BD
   useEffect(async () => {
     try {
@@ -41,35 +52,47 @@ const Persona = () => {
   }, []);
 
   // ADD nueva persona
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (nombre && apellido && alias && email) {
-      const nuevaPersona = {
-        nombre: nombre.toUpperCase(),
-        apellido: apellido.toUpperCase(),
-        alias: alias.toUpperCase(),
-        email: email.toUpperCase(),
-      };
-      axios.post('http://localhost:3005/persona', nuevaPersona);
-      dispatch({ type: 'ADD_ITEM', payload: nuevaPersona });
-      setNombre('');
-      setApellido('');
-      setAlias('');
-      setEmail('');
-    } else {
-      window.alert('No puedes ingresar valores en blanco');
+    try {
+      if (nombre && apellido && alias && email) {
+        const nuevaPersona = {
+          nombre: nombre.toUpperCase(),
+          apellido: apellido.toUpperCase(),
+          alias: alias.toUpperCase(),
+          email: email.toUpperCase(),
+        };
+        const response = await axios.post(
+          'http://localhost:3005/persona',
+          nuevaPersona
+        );
+        if (!response.data || response.data?.length == 0) return;
+        dispatch({ type: 'ADD_ITEM', payload: nuevaPersona });
+        setNombre('');
+        setApellido('');
+        setAlias('');
+        setEmail('');
+        handleRender();
+      } else {
+        window.alert('No puedes ingresar valores en blanco');
+      }
+    } catch (e) {
+      console.log(e);
     }
   };
 
   // DELETE persona
   const handleDelete = async (e) => {
     const personaId = e.target.value;
-    const response = await axios.delete(
-      'http://localhost:3005/persona/' + personaId
-    );
-    if (!response.data || response.data?.length == 0) return;
-    dispatch({ type: 'REMOVE_ITEM', payload: personaId });
-    axios.delete('http://localhost:3005/persona/' + personaId);
+    try {
+      const response = await axios.delete(
+        'http://localhost:3005/persona/' + personaId
+      );
+      if (!response.data || response.data?.length == 0) return;
+      dispatch({ type: 'REMOVE_ITEM', payload: personaId });
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   // PUT persona
@@ -81,9 +104,6 @@ const Persona = () => {
         payload: state.personaEditModal,
       });
       setId(personaId);
-      console.log(
-        state.listaLibros.find((unLibro) => unLibro.persona_id == personaId)
-      );
     } else {
       dispatch({
         type: 'SWITCH_EDIT_MODAL',
@@ -100,6 +120,7 @@ const Persona = () => {
           personaId={id}
           handleEdit={handleEdit}
           listaPersonas={state.personas}
+          handleRender={handleRender}
         />
       )}
       <section className='section'>
@@ -166,7 +187,7 @@ const Persona = () => {
               <div className='item-datos'>
                 <p>Nombre: {nombre || 'sin nombre'}</p>
                 <p>Apellido: {apellido || 'sin apellido'}</p>
-                
+
                 <p>Alias: {alias || 'sin alias'}</p>
                 <p>Email: {email || 'sin email'}</p>
                 <p>
@@ -178,7 +199,7 @@ const Persona = () => {
               </div>
 
               <div className='item-botones'>
-              <p className='item-botones-id'>Id: {id}</p>
+                <p className='item-botones-id'>Id: {id}</p>
                 <button className='btn' onClick={handleEdit} value={id}>
                   Editar
                 </button>
@@ -186,7 +207,6 @@ const Persona = () => {
                   Eliminar
                 </button>
               </div>
-              
             </div>
           );
         })}
@@ -207,27 +227,32 @@ const PersonaEdit = (props) => {
     (unaPersona) => unaPersona.id == props.personaId
   );
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (nombre && apellido && email && alias) {
-      const editPersona = {
-        nombre: nombre,
-        apellido: apellido,
-        email: email,
-        alias: alias,
-      };
-
-      dispatch({ type: 'EDIT_ITEM', payload: editPersona });
-      axios.put(
-        'http://localhost:3005/persona/' + props.personaId,
-        editPersona
-      );
-      setNombre('');
-      setApellido('');
-      setEmail('');
-      setAlias('');
-    } else {
-      window.alert('No puedes ingresar valores en blanco');
+    try {
+      if (nombre && apellido && email && alias) {
+        const editPersona = {
+          nombre: nombre,
+          apellido: apellido,
+          email: email,
+          alias: alias,
+        };
+        const response = await axios.put(
+          'http://localhost:3005/persona/' + props.personaId,
+          editPersona
+        );
+        if (!response.data || response.data.length == 0) return;
+        dispatch({ type: 'EDIT_ITEM', payload: response.data });
+        setNombre('');
+        setApellido('');
+        setEmail('');
+        setAlias('');
+        props.handleRender();
+      } else {
+        window.alert('No puedes ingresar valores en blanco');
+      }
+    } catch (e) {
+      console.log(e);
     }
   };
   return (

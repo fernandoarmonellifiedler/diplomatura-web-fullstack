@@ -7,9 +7,16 @@ export const reducer = (state, action) => {
     };
   }
 
+  if (action.type === 'RE_RENDER') {
+    const nuevaCategorias = action.payload;
+    return {
+      ...state,
+      categorias: nuevaCategorias,
+    };
+  }
+
   if (action.type === 'FETCH_BOOK_LIST') {
     const nuevoLibros = action.payload;
-    //console.log(nuevoLibros);
     return {
       ...state,
       libros: nuevoLibros,
@@ -21,7 +28,6 @@ export const reducer = (state, action) => {
     return {
       ...state,
       librosEnCategoria: state.libros.filter((unLibro) => {
-        //console.log(unLibro.categoria_id, unLibro.categoria_id === categoriaId);
         return unLibro.categoria_id === categoriaId;
       }),
     };
@@ -67,14 +73,6 @@ export const reducer = (state, action) => {
       categoriaEditModal: modalState,
     };
   }
-
-  // if (action.type === 'CAMBIO_ESTADO') {
-  //   const estado = !action.payload;
-  //   return {
-  //     ...state,
-  //     cambioEstado: estado,
-  //   };
-  // }
 
   throw new Error('no matching action type');
 };

@@ -21,6 +21,17 @@ const Libro = () => {
   const [state, dispatch] = useReducer(reducer, defaultState); // useReducer
   const [id, setId] = useState('');
 
+  // funcion para re-renderizar componentes
+  const handleRender = async () => {
+    try {
+      const response = await axios.get('http://localhost:3005/libro');
+      if (!response.data || response.data?.length == 0) return;
+      dispatch({ type: 'FETCH_LIST', payload: response.data });
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   // buscar lista de libros en BD
   useEffect(async () => {
     try {
@@ -55,35 +66,48 @@ const Libro = () => {
   }, []);
 
   // ADD nuevo libro
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (nombre && descripcion) {
-      const nuevoLibro = {
-        nombre_libro: nombre.toUpperCase(),
-        descripcion: descripcion.toUpperCase(),
-        categoria_id: categoria,
-        persona_id: persona,
-      };
-      dispatch({ type: 'ADD_ITEM', payload: nuevoLibro });
-      axios.post('http://localhost:3005/libro', nuevoLibro);
-      setNombre('');
-      setDescripcion('');
-      setCategoria('');
-      setPersona('');
-    } else {
-      window.alert('No puedes ingresar valores en blanco');
+    try {
+      if (nombre && descripcion) {
+        const nuevoLibro = {
+          nombre_libro: nombre.toUpperCase(),
+          descripcion: descripcion.toUpperCase(),
+          categoria_id: categoria,
+          persona_id: persona,
+        };
+        const response = await axios.post(
+          'http://localhost:3005/libro',
+          nuevoLibro
+        );
+        if (!response.data || response.data?.length == 0) return;
+        dispatch({ type: 'ADD_ITEM', payload: nuevoLibro });
+        setNombre('');
+        setDescripcion('');
+        setCategoria('');
+        setPersona('');
+        handleRender();
+      } else {
+        window.alert('No puedes ingresar valores en blanco');
+      }
+    } catch (e) {
+      console.log(e);
     }
   };
 
   // DELETE libro
   const handleDelete = async (e) => {
     const libroId = e.target.value;
-    const response = await axios.delete(
-      'http://localhost:3005/libro/' + libroId
-    );
-    if (!response.data || response.data?.length == 0) return;
-    dispatch({ type: 'REMOVE_ITEM', payload: libroId });
-    axios.delete('http://localhost:3005/libro/' + libroId);
+    try {
+      const response = await axios.delete(
+        'http://localhost:3005/libro/' + libroId
+      );
+      if (!response.data || response.data?.length == 0) return;
+      dispatch({ type: 'REMOVE_ITEM', payload: libroId });
+      handleRender();
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   // PUT libro
@@ -107,12 +131,14 @@ const Libro = () => {
   const handlePrestar = (e) => {
     const libroId = e.target.value;
     if (libroId) {
+      
       dispatch({
         type: 'SWITCH_PRESTAR_MODAL',
         payload: state.libroPrestarModal,
       });
       setId(libroId);
     } else {
+      
       dispatch({
         type: 'SWITCH_PRESTAR_MODAL',
         payload: state.libroPrestarModal,
@@ -121,7 +147,7 @@ const Libro = () => {
   };
 
   // PUT libro devolver
-  const handleDevolver = (e) => {
+  const handleDevolver = async (e) => {
     const libroId = e.target.value;
     const libroSelected = state.libros.find((unLibro) => unLibro.id == libroId);
 
@@ -131,9 +157,18 @@ const Libro = () => {
       categoria_id: libroSelected.categoria_id,
       persona_id: null,
     };
-
-    dispatch({ type: 'DEVOLVER_ITEM', payload: devolverLibro });
-    axios.put('http://localhost:3005/libro/devolver/' + libroId, devolverLibro);
+    try {
+      const response = await axios.put(
+        'http://localhost:3005/libro/devolver/' + libroId,
+        devolverLibro
+      );
+      if (!response.data || response.data?.length == 0) return;
+      dispatch({ type: 'REMOVE_ITEM', payload: libroId });
+      dispatch({ type: 'DEVOLVER_ITEM', payload: response.data });
+      handleRender();
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   return (
@@ -144,6 +179,7 @@ const Libro = () => {
           libroId={id}
           handleEdit={handleEdit}
           listaLibros={state.libros}
+          handleRender={handleRender}
         />
       )}
       {/* Modal para prestar libro */}
@@ -152,6 +188,7 @@ const Libro = () => {
           libroId={id}
           handlePrestar={handlePrestar}
           listaLibros={state.libros}
+          handleRender={handleRender}
         />
       )}
 
@@ -286,24 +323,32 @@ const LibroEdit = (props) => {
     (unLibro) => unLibro.id == props.libroId
   );
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (descripcion) {
+    try {
       const editLibro = {
         nombre_libro: libroSelected.nombre_libro,
         descripcion: descripcion,
         categoria_id: libroSelected.categoria_id,
         persona_id: libroSelected.persona_id,
       };
-      console.log(editLibro);
-      dispatch({ type: 'EDIT_ITEM', payload: editLibro });
-      axios.put('http://localhost:3005/libro/' + props.libroId, editLibro);
-      setNombre('');
-      setDescripcion('');
-      setCategoria('');
-      setPersona('');
-    } else {
-      window.alert('No puedes ingresar valores en blanco');
+      if (descripcion) {
+        const response = await axios.put(
+          'http://localhost:3005/libro/' + props.libroId,
+          editLibro
+        );
+        if (!response.data || response.data?.length == 0) return;
+        dispatch({ type: 'EDIT_ITEM', payload: response.data });
+        setNombre('');
+        setDescripcion('');
+        setCategoria('');
+        setPersona('');
+        props.handleRender();
+      } else {
+        window.alert('No puedes ingresar valores en blanco');
+      }
+    } catch (e) {
+      console.log(e);
     }
   };
   return (
@@ -347,27 +392,32 @@ const LibroPrestar = (props) => {
     (unLibro) => unLibro.id == props.libroId
   );
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (persona) {
-      const editLibro = {
-        nombre_libro: libroSelected.nombre_libro,
-        descripcion: libroSelected.descripcion,
-        categoria_id: libroSelected.categoria_id,
-        persona_id: persona,
-      };
-
-      dispatch({ type: 'PRESTAR_ITEM', payload: editLibro });
-      axios.put(
-        'http://localhost:3005/libro/prestar/' + props.libroId,
-        editLibro
-      );
-      setNombre('');
-      setDescripcion('');
-      setCategoria('');
-      setPersona('');
-    } else {
-      window.alert('No puedes ingresar valores en blanco');
+    try {
+      if (persona) {
+        const editLibro = {
+          nombre_libro: libroSelected.nombre_libro,
+          descripcion: libroSelected.descripcion,
+          categoria_id: libroSelected.categoria_id,
+          persona_id: persona,
+        };
+        const response = await axios.put(
+          'http://localhost:3005/libro/prestar/' + props.libroId,
+          editLibro
+        );
+        if (!response.data || response.data?.length == 0) return;
+        dispatch({ type: 'PRESTAR_ITEM', payload: editLibro });
+        setNombre('');
+        setDescripcion('');
+        setCategoria('');
+        setPersona('');
+        props.handleRender();
+      } else {
+        window.alert('No puedes ingresar valores en blanco');
+      }
+    } catch (e) {
+      console.log(e);
     }
   };
 

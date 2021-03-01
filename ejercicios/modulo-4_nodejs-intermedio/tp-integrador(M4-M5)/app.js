@@ -379,18 +379,18 @@ app.put('/libro/:id', async (req, res) => {
     respuesta = await utilQuery(query, [descripcion, req.params.id]);
 
     // toma id del libro para agregar al res.send
-    query = 'SELECT id FROM libro WHERE nombre_libro = ?';
-    respuesta = await utilQuery(query, [nombre_libro]);
+    query = 'SELECT * FROM libro WHERE id = ?';
+    respuesta = await utilQuery(query, [req.params.id]);
 
     // send
     res
       .status(200)
       .send({
         id: respuesta[0].id,
-        nombre: nombre_libro,
-        descripcion: descripcion,
-        categoria_id: categoria_bd,
-        persona_id: persona,
+        nombre: respuesta[0].nombre_libro,
+        descripcion: respuesta[0].descripcion,
+        categoria_id: respuesta[0].categoria_id,
+        persona_id: respuesta[0].persona_id,
       });
   } catch (e) {
     console.error(e.message);
@@ -480,7 +480,20 @@ app.put('/libro/devolver/:id', async (req, res) => {
 
     respuesta = await utilQuery(query, [req.params.id]);
 
-    res.status(200).send('El libro se devolvió correctamente');
+    // toma el libro para agregar al res.send
+    query = 'SELECT * FROM libro WHERE id = ?';
+    respuesta = await utilQuery(query, [req.params.id]);
+    // send
+    res
+      .status(200)
+      .send({
+        id: respuesta[0].id,
+        nombre: respuesta[0].nombre_libro,
+        descripcion: respuesta[0].descripcion,
+        categoria_id: respuesta[0].categoria_id,
+        persona_id: respuesta[0].persona_id,
+      });
+    // res.status(200).send(respuesta);
   } catch (e) {
     console.error(e.message);
     res.status(413).send(e.message);
@@ -684,18 +697,18 @@ app.put('/persona/:id', async (req, res) => {
     ]);
 
     // toma id de persona para agregar al res.send
-    query = 'SELECT id FROM persona WHERE nombre = ?';
-    respuesta = await utilQuery(query, [nombre]);
+    query = 'SELECT * FROM persona WHERE id = ?';
+    respuesta = await utilQuery(query, [req.params.id]);
 
     // send
     res
       .status(200)
       .send({
         id: respuesta[0].id,
-        nombre: nombre,
-        apellido: apellido,
-        alias: alias,
-        email: email,
+        nombre: respuesta[0].nombre,
+        apellido: respuesta[0].apellido,
+        alias: respuesta[0].alias,
+        email: respuesta[0].email,
       });
   } catch (e) {
     // el if convierte el mensaje de error del sistema en uno reconocible para el usuario

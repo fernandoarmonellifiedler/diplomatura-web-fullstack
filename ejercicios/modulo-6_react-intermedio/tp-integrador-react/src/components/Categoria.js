@@ -10,19 +10,26 @@ const defaultState = {
   libros: [],
   categoriaLibrosModal: false,
   categoriaEditModal: false,
-  // cambioEstado: false // resolver: estado para actualizar el componente
 };
 
 // COMPONENTE PRINCIPAL
 const Categoria = () => {
   const [nombre, setNombre] = useState('');
   const [id, setId] = useState('');
-  const [estado, setEstado] = useState(false); // resolver: estado para actualizar el componente
+  const [count, setCount] = useState(0); // resolver: estado para actualizar el componente
   const [state, dispatch] = useReducer(reducer, defaultState); // useReducer
-  // resolver: funcion para modificar estado
-  const cambiarEstado = () => {
-    setEstado((estado) => !estado);
+
+  // funcion para re-renderizar componentes
+  const handleRender = async () => {
+    try {
+      const response = await axios.get('http://localhost:3005/categoria');
+      if (!response.data || response.data?.length == 0) return;
+      dispatch({ type: 'FETCH_LIST', payload: response.data });
+    } catch (e) {
+      console.log(e);
+    }
   };
+
   // busca lista de categorias en BD
   useEffect(async () => {
     try {
@@ -33,19 +40,28 @@ const Categoria = () => {
       console.log(e);
     }
   }, []);
-  
+
   // ADD nueva categoria
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (nombre) {
-      const editCategoria = {
-        nombre_categoria: nombre.toUpperCase(),
-      };
-      dispatch({ type: 'ADD_ITEM', payload: editCategoria });
-      axios.post('http://localhost:3005/categoria', editCategoria);
-      setNombre('');
-    } else {
-      window.alert('No puedes ingresar valores en blanco');
+    try {
+      if (nombre) {
+        const addCategoria = {
+          nombre_categoria: nombre.toUpperCase(),
+        };
+        const response = await axios.post(
+          'http://localhost:3005/categoria',
+          addCategoria
+        );
+        if (!response.data || response.data?.length == 0) return;
+        dispatch({ type: 'ADD_ITEM', payload: addCategoria });
+        setNombre('');
+        handleRender();
+      } else {
+        window.alert('No puedes ingresar valores en blanco');
+      }
+    } catch (e) {
+      console.log(e);
     }
   };
   // DELETE categoria
@@ -57,6 +73,7 @@ const Categoria = () => {
       );
       if (!response.data || response.data?.length == 0) return;
       dispatch({ type: 'REMOVE_ITEM', payload: categoriaId });
+      handleRender();
     } catch (e) {
       console.log(e);
     }
@@ -94,6 +111,7 @@ const Categoria = () => {
       dispatch({ type: 'SWITCH_MODAL', payload: state.categoriaLibrosModal });
     }
   };
+
   return (
     <>
       {/* Modal para ver libros en categoria */}
@@ -104,8 +122,8 @@ const Categoria = () => {
       {state.categoriaEditModal && (
         <CategoriaEdit
           catId={id}
-          cambiarEstado={cambiarEstado}
           handleEdit={handleEdit}
+          handleRender={handleRender}
         />
       )}
       <section className='section'>
@@ -127,6 +145,7 @@ const Categoria = () => {
           </div>
           <button type='submit'>Agregar Categoría</button>
         </form>
+
         {/* iterando sobre la lista de categorias de la bd */}
         <h3>Listado de categorías</h3>
         {state.categorias.map((unaCategoria) => {
@@ -163,21 +182,26 @@ const CategoriaEdit = (props) => {
   const [nombre, setNombre] = useState('');
   const [state, dispatch] = useReducer(reducer, defaultState);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (nombre) {
-      const editCategoria = {
-        nombre_categoria: nombre.toUpperCase(),
-      };
-      dispatch({ type: 'EDIT_ITEM', payload: editCategoria });
-      axios.put(
-        'http://localhost:3005/categoria/' + props.catId,
-        editCategoria
-      );
-      setNombre('');
-      props.cambiarEstado();
-    } else {
-      window.alert('No puedes ingresar valores en blanco');
+    try {
+      if (nombre) {
+        const editCategoria = {
+          nombre_categoria: nombre.toUpperCase(),
+        };
+        const response = await axios.put(
+          'http://localhost:3005/categoria/' + props.catId,
+          editCategoria
+        );
+        if (!response.data || response.data?.length == 0) return;
+        dispatch({ type: 'EDIT_ITEM', payload: editCategoria });
+        setNombre('');
+        props.handleRender();
+      } else {
+        window.alert('No puedes ingresar valores en blanco');
+      }
+    } catch (e) {
+      console.log(e);
     }
   };
   return (
