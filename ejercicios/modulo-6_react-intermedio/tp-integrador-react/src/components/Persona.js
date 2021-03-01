@@ -30,6 +30,14 @@ const Persona = () => {
     }
   };
 
+  // funcion para abrir/cerrar el modal
+  const handleModalEdit = () => {
+    dispatch({
+      type: 'SWITCH_EDIT_MODAL',
+      payload: state.personaEditModal,
+    });
+  };
+
   // buscar lista de personas en BD
   useEffect(async () => {
     try {
@@ -99,16 +107,10 @@ const Persona = () => {
   const handleEdit = (e) => {
     const personaId = e.target.value;
     if (personaId) {
-      dispatch({
-        type: 'SWITCH_EDIT_MODAL',
-        payload: state.personaEditModal,
-      });
+      handleModalEdit();
       setId(personaId);
     } else {
-      dispatch({
-        type: 'SWITCH_EDIT_MODAL',
-        payload: state.personaEditModal,
-      });
+      handleModalEdit();
     }
   };
 
@@ -121,6 +123,7 @@ const Persona = () => {
           handleEdit={handleEdit}
           listaPersonas={state.personas}
           handleRender={handleRender}
+          handleModalEdit={handleModalEdit}
         />
       )}
       <section className='section'>
@@ -248,6 +251,7 @@ const PersonaEdit = (props) => {
         setEmail('');
         setAlias('');
         props.handleRender();
+        props.handleModalEdit();
       } else {
         window.alert('No puedes ingresar valores en blanco');
       }

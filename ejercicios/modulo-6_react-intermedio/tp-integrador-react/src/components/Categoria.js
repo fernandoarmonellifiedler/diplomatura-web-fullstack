@@ -30,6 +30,19 @@ const Categoria = () => {
     }
   };
 
+  // funcion para abrir/cerrar el modal
+  const handleModalEdit = () => {
+    dispatch({
+      type: 'SWITCH_EDIT_MODAL',
+      payload: state.categoriaEditModal,
+    });
+  };
+
+  // funcion para abrir/cerrar el modal
+  const handleModalVerMas = () => {
+    dispatch({ type: 'SWITCH_MODAL', payload: state.categoriaLibrosModal });
+  };
+
   // busca lista de categorias en BD
   useEffect(async () => {
     try {
@@ -82,23 +95,17 @@ const Categoria = () => {
   const handleEdit = (e) => {
     const categoriaId = e.target.value;
     if (categoriaId) {
-      dispatch({
-        type: 'SWITCH_EDIT_MODAL',
-        payload: state.categoriaEditModal,
-      });
+      handleModalEdit();
       setId(categoriaId);
     } else {
-      dispatch({
-        type: 'SWITCH_EDIT_MODAL',
-        payload: state.categoriaEditModal,
-      });
+      handleModalEdit();
     }
   };
   // Modal para ver libros en categoria
   const handleVerMas = async (e) => {
     const categoriaId = e.target.value;
     if (categoriaId) {
-      dispatch({ type: 'SWITCH_MODAL', payload: state.categoriaLibrosModal });
+      handleModalVerMas();
       try {
         const response = await axios.get('http://localhost:3005/libro');
         if (!response.data || response.data?.length == 0) return;
@@ -108,7 +115,7 @@ const Categoria = () => {
         console.log(e);
       }
     } else {
-      dispatch({ type: 'SWITCH_MODAL', payload: state.categoriaLibrosModal });
+      handleModalVerMas();
     }
   };
 
@@ -124,6 +131,7 @@ const Categoria = () => {
           catId={id}
           handleEdit={handleEdit}
           handleRender={handleRender}
+          handleModalEdit={handleModalEdit}
         />
       )}
       <section className='section'>
@@ -197,6 +205,7 @@ const CategoriaEdit = (props) => {
         dispatch({ type: 'EDIT_ITEM', payload: editCategoria });
         setNombre('');
         props.handleRender();
+        props.handleModalEdit();
       } else {
         window.alert('No puedes ingresar valores en blanco');
       }
@@ -239,7 +248,10 @@ const CategoriaLibrosModal = (props) => {
       <section className='cat-modal'>
         <header>
           <h3 className='cat-modal-h3'>Libros en categoria:</h3>
-          <button className='btn cat-modal-btn' onClick={props.handleVerMas}>
+          <button
+            className='btn cat-modal-btn'
+            onClick={props.handleVerMas}
+          >
             X
           </button>
         </header>

@@ -32,6 +32,22 @@ const Libro = () => {
     }
   };
 
+  // funcion para abrir/cerrar el modal
+  const handleModalEdit = () => {
+    dispatch({
+      type: 'SWITCH_EDIT_MODAL',
+      payload: state.libroEditModal,
+    });
+  };
+
+  // funcion para abrir/cerrar el modal
+  const handleModalPrestar = () => {
+    dispatch({
+      type: 'SWITCH_PRESTAR_MODAL',
+      payload: state.libroPrestarModal,
+    });
+  };
+
   // buscar lista de libros en BD
   useEffect(async () => {
     try {
@@ -114,16 +130,10 @@ const Libro = () => {
   const handleEdit = (e) => {
     const libroId = e.target.value;
     if (libroId) {
-      dispatch({
-        type: 'SWITCH_EDIT_MODAL',
-        payload: state.libroEditModal,
-      });
+      handleModalEdit();
       setId(libroId);
     } else {
-      dispatch({
-        type: 'SWITCH_EDIT_MODAL',
-        payload: state.libroEditModal,
-      });
+      handleModalEdit();
     }
   };
 
@@ -131,18 +141,10 @@ const Libro = () => {
   const handlePrestar = (e) => {
     const libroId = e.target.value;
     if (libroId) {
-      
-      dispatch({
-        type: 'SWITCH_PRESTAR_MODAL',
-        payload: state.libroPrestarModal,
-      });
+      handleModalPrestar();
       setId(libroId);
     } else {
-      
-      dispatch({
-        type: 'SWITCH_PRESTAR_MODAL',
-        payload: state.libroPrestarModal,
-      });
+      handleModalPrestar();
     }
   };
 
@@ -180,6 +182,7 @@ const Libro = () => {
           handleEdit={handleEdit}
           listaLibros={state.libros}
           handleRender={handleRender}
+          handleModalEdit={handleModalEdit}
         />
       )}
       {/* Modal para prestar libro */}
@@ -189,6 +192,7 @@ const Libro = () => {
           handlePrestar={handlePrestar}
           listaLibros={state.libros}
           handleRender={handleRender}
+          handleModalPrestar={handleModalPrestar}
         />
       )}
 
@@ -344,6 +348,7 @@ const LibroEdit = (props) => {
         setCategoria('');
         setPersona('');
         props.handleRender();
+        props.handleModalEdit();
       } else {
         window.alert('No puedes ingresar valores en blanco');
       }
@@ -413,6 +418,7 @@ const LibroPrestar = (props) => {
         setCategoria('');
         setPersona('');
         props.handleRender();
+        props.handleModalPrestar();
       } else {
         window.alert('No puedes ingresar valores en blanco');
       }
