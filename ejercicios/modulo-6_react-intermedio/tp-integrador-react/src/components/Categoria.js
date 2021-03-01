@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useReducer } from 'react';
-import ReactDOM from 'react-dom';
 import axios from 'axios';
-import { reducer } from '../reducers/categoriaReducer'; // import reducer
+import { reducer } from '../reducers/categoriaReducer'; // import categoria reducer
 import { v4 as uuidv4 } from 'uuid'; // genera id unicos
 
 // reducer: default state
@@ -9,22 +8,22 @@ const defaultState = {
   categorias: [],
   librosEnCategoria: [],
   libros: [],
-  categoriaModal: false,
+  categoriaLibrosModal: false,
   categoriaEditModal: false,
-  // cambioEstado: false
+  // cambioEstado: false // resolver: estado para actualizar el componente
 };
 
+// COMPONENTE PRINCIPAL
 const Categoria = () => {
   const [nombre, setNombre] = useState('');
   const [id, setId] = useState('');
-  const [estado, setEstado] = useState(false);
-  // useReducer
-  const [state, dispatch] = useReducer(reducer, defaultState);
-
+  const [estado, setEstado] = useState(false); // resolver: estado para actualizar el componente
+  const [state, dispatch] = useReducer(reducer, defaultState); // useReducer
+  // resolver: funcion para modificar estado
   const cambiarEstado = () => {
     setEstado((estado) => !estado);
   };
-
+  // busca lista de categorias en BD
   useEffect(async () => {
     try {
       const response = await axios.get('http://localhost:3005/categoria');
@@ -34,7 +33,8 @@ const Categoria = () => {
       console.log(e);
     }
   }, []);
-
+  
+  // ADD nueva categoria
   const handleSubmit = (e) => {
     e.preventDefault();
     if (nombre) {
@@ -48,7 +48,7 @@ const Categoria = () => {
       window.alert('No puedes ingresar valores en blanco');
     }
   };
-
+  // DELETE categoria
   const handleDelete = async (e) => {
     try {
       const categoriaId = e.target.value;
@@ -61,7 +61,7 @@ const Categoria = () => {
       console.log(e);
     }
   };
-
+  // PUT categoria
   const handleEdit = (e) => {
     const categoriaId = e.target.value;
     if (categoriaId) {
@@ -77,11 +77,11 @@ const Categoria = () => {
       });
     }
   };
-
+  // Modal para ver libros en categoria
   const handleVerMas = async (e) => {
     const categoriaId = e.target.value;
     if (categoriaId) {
-      dispatch({ type: 'SWITCH_MODAL', payload: state.categoriaModal });
+      dispatch({ type: 'SWITCH_MODAL', payload: state.categoriaLibrosModal });
       try {
         const response = await axios.get('http://localhost:3005/libro');
         if (!response.data || response.data?.length == 0) return;
@@ -91,22 +91,28 @@ const Categoria = () => {
         console.log(e);
       }
     } else {
-      dispatch({ type: 'SWITCH_MODAL', payload: state.categoriaModal });
+      dispatch({ type: 'SWITCH_MODAL', payload: state.categoriaLibrosModal });
     }
   };
-console.log(state.categoriaEditModal);
   return (
     <>
-      {state.categoriaModal && <CategoriaModal fullState={state} handleVerMas={handleVerMas}  />}
-      {state.categoriaEditModal && (
-        <CategoriaEdit catId={id} cambiarEstado={cambiarEstado} handleEdit={handleEdit} />
+      {/* Modal para ver libros en categoria */}
+      {state.categoriaLibrosModal && (
+        <CategoriaLibrosModal fullState={state} handleVerMas={handleVerMas} />
       )}
-
+      {/* Modal para editar categoria */}
+      {state.categoriaEditModal && (
+        <CategoriaEdit
+          catId={id}
+          cambiarEstado={cambiarEstado}
+          handleEdit={handleEdit}
+        />
+      )}
       <section className='section'>
         <header>
           <h2>Agregar categoría</h2>
         </header>
-
+        {/* Formulario */}
         <form className='form' onSubmit={handleSubmit}>
           {/* Nombre de la categoria */}
           <div className='form-control categoria-form'>
@@ -121,9 +127,8 @@ console.log(state.categoriaEditModal);
           </div>
           <button type='submit'>Agregar Categoría</button>
         </form>
-
+        {/* iterando sobre la lista de categorias de la bd */}
         <h3>Listado de categorías</h3>
-        {/* iterando sobre la lista de libros de la base de datos */}
         {state.categorias.map((unaCategoria) => {
           const { id, nombre_categoria } = unaCategoria;
           return (
@@ -132,7 +137,7 @@ console.log(state.categoriaEditModal);
                 <h5 className='title-categoria'>
                   {nombre_categoria || 'sin categoria'}
                 </h5>
-                <p>Categoria N°{id}</p>
+                <p>Categoria Id: {id}</p>
                 <button onClick={handleVerMas} value={id}>
                   Ver Libros
                 </button>
@@ -153,6 +158,7 @@ console.log(state.categoriaEditModal);
   );
 };
 
+// COMPONENTE MODAL PARA EDITAR
 const CategoriaEdit = (props) => {
   const [nombre, setNombre] = useState('');
   const [state, dispatch] = useReducer(reducer, defaultState);
@@ -174,12 +180,11 @@ const CategoriaEdit = (props) => {
       window.alert('No puedes ingresar valores en blanco');
     }
   };
-
   return (
     <>
       <section className='cat-modal'>
         <header>
-          <h3 className="cat-edit-h3">Editar categoría</h3>
+          <h3 className='cat-edit-h3'>Editar categoría</h3>
           <button className='btn cat-edit-btn' onClick={props.handleEdit}>
             X
           </button>
@@ -203,8 +208,8 @@ const CategoriaEdit = (props) => {
   );
 };
 
-const CategoriaModal = (props) => {
-console.log(props);
+// COMPONENTE MODAL PARA MOSTRAR LIBROS EN CATEGORIA
+const CategoriaLibrosModal = (props) => {
   return (
     <>
       <section className='cat-modal'>

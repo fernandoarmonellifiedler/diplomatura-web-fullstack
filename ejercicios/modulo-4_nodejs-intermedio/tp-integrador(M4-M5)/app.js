@@ -349,7 +349,7 @@ app.put('/libro/:id', async (req, res) => {
     query = 'SELECT * FROM libro WHERE id = ?';
 
     respuesta = await utilQuery(query, [req.params.id]);
-
+    
     if (respuesta[0].persona_id != req.body.persona_id) {
       throw new Error(
         "El valor de 'persona_id' no coincide con la del ID proporcionado. Para alterar este valor direccione la petición a '/libro/prestar/:id' o '/libro/devolver/:id'."

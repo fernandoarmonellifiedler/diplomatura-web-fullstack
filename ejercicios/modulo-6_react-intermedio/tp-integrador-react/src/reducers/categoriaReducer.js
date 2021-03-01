@@ -56,7 +56,7 @@ export const reducer = (state, action) => {
     const modalState = !action.payload;
     return {
       ...state,
-      categoriaModal: modalState,
+      categoriaLibrosModal: modalState,
     };
   }
 
