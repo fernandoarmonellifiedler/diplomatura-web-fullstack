@@ -23,25 +23,3 @@ function App() {
 }
 
 export default App;
-
-// const [state, setState] = useState({
-//   categorias: [],
-//   libros: [],
-//   personas: [],
-// })
-
-// useEffect(async () => {
-//   try {
-//     let response = await axios.get('http://localhost:3005/categoria');
-//     if (!response.data || response.data?.length == 0) return;
-//     setState({...state, categorias: response.data})
-//     response = await axios.get('http://localhost:3005/libro');
-//     if (!response.data || response.data?.length == 0) return;
-//     setState({...state, libros: response.data})
-//     response = await axios.get('http://localhost:3005/persona');
-//     if (!response.data || response.data?.length == 0) return;
-//     setState({...state, personas: response.data})
-//   } catch (e) {
-//     console.log(e);
-//   }
-// }, []);

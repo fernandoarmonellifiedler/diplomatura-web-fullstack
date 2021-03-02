@@ -146,10 +146,10 @@ app.put('/categoria/:id', async (req, res) => {
     }
 
     // // Valida que exista la categoria
-    let query = 'SELECT * FROM categoria WHERE id = ?';
+    let query = 'SELECT * FROM categoria WHERE nombre_categoria = ?';
 
-    let respuesta = await utilQuery(query, [req.params.id]);
-
+    let respuesta = await utilQuery(query, [req.body.nombre_categoria]);
+    console.log(respuesta)
     if (respuesta.length != 0) {
       throw new Error('Ya existe la categoria indicada!');
     }

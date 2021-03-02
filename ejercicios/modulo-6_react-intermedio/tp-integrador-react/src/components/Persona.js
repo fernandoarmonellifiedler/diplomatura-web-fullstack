@@ -143,7 +143,6 @@ const Persona = () => {
           listaPersonas={state.personas}
           handleRender={handleRender}
           handleModalEdit={handleModalEdit}
-          listaPersonas={state.personas}
         />
       )}
       <section className='section'>

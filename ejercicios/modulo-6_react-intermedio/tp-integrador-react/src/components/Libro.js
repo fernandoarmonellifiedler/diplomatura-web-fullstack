@@ -84,58 +84,60 @@ const Libro = () => {
   // ADD nuevo libro
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // valida que exista la categoria
+
     try {
-      const response = await axios.get('http://localhost:3005/categoria');
+      // valida que exista la persona
+      const response = await axios.get('http://localhost:3005/persona');
       if (!response.data || response.data?.length == 0) return;
-      dispatch({ type: 'FETCH_CATEGORIA_LIST', payload: response.data });
+      dispatch({ type: 'FETCH_PERSONA_LIST', payload: response.data });
       const result = response.data.filter(
+        (unaPersona) => unaPersona.id == persona
+      );
+      if (result.length == 0 && persona != '') {
+        return window.alert('Esa persona no existe');
+      }
+    } catch (e) {
+      console.log(e);
+    }
+    try {
+      // valida que exista la categoria
+      const response2 = await axios.get('http://localhost:3005/categoria');
+      if (!response2.data || response2.data?.length == 0) return;
+      dispatch({ type: 'FETCH_CATEGORIA_LIST', payload: response2.data });
+      const result2 = response2.data.filter(
         (unaCategoria) => unaCategoria.id == categoria
       );
-      if (result.length == 0) {
+      if (result2.length == 0) {
         return window.alert('Esa categoria no existe');
       }
     } catch (e) {
       console.log(e);
     }
-    // valida que exista la persona
-    try {
-      const response = await axios.get('http://localhost:3005/persona');
-      if (!response.data || response.data?.length == 0) return;
-      dispatch({ type: 'FETCH_PERSONA_LIST', payload: response.data });
-      const result = response.data.filter(
-        (unaPersona) => unaPersona.id == persona 
-      );
-      if (result.length == 0 && persona != '') {
-        return window.alert('Esa persona no existe');
-      }
-
-    } catch (e) {
-      console.log(e);
-    }
 
     try {
+      // valida que se ingresen los datos obligatorios
       if (nombre && descripcion) {
+        // crea nuevo libro
         const nuevoLibro = {
           nombre_libro: nombre.toUpperCase(),
           descripcion: descripcion.toUpperCase(),
           categoria_id: categoria,
           persona_id: persona || null,
         };
-
         // valida que el nombre no exista
-        const result = state.libros.filter(
-          (unLibro) => unLibro.nombre_libro == nuevoLibro.nombre_libro 
+        const libroExiste = state.libros.filter(
+          (unLibro) => unLibro.nombre_libro == nuevoLibro.nombre_libro
         );
-        if (result.length != 0) {
+        console.log(libroExiste);
+        if (libroExiste.length != 0) {
           return window.alert('Esa libro ya existe');
         }
-
-        const response = await axios.post(
+        // POST a la bd
+        const libroPost = await axios.post(
           'http://localhost:3005/libro',
           nuevoLibro
         );
-        if (!response.data || response.data?.length == 0) return;
+        if (!libroPost.data || libroPost.data?.length == 0) return;
         dispatch({ type: 'ADD_ITEM', payload: nuevoLibro });
         setNombre('');
         setDescripcion('');
@@ -143,7 +145,7 @@ const Libro = () => {
         setPersona('');
         handleRender();
       } else {
-        window.alert('No puedes ingresar valores en blanco');
+        return window.alert('No puedes ingresar valores en blanco');
       }
     } catch (e) {
       console.log(e);
@@ -154,11 +156,13 @@ const Libro = () => {
   const handleDelete = async (e) => {
     const libroId = e.target.value;
     try {
-      const unLibro = state.libros.find(unLibro => unLibro.id == libroId)
-    const result = state.personas.find(unaPersona => unaPersona.id == unLibro.persona_id)
-    if (result) {
-      return window.alert('Debes devolver el libro para poder borrarlo')
-    }
+      const unLibro = state.libros.find((unLibro) => unLibro.id == libroId);
+      const result = state.personas.find(
+        (unaPersona) => unaPersona.id == unLibro.persona_id
+      );
+      if (result) {
+        return window.alert('Debes devolver el libro para poder borrarlo');
+      }
       const response = await axios.delete(
         'http://localhost:3005/libro/' + libroId
       );
@@ -437,15 +441,21 @@ const LibroPrestar = (props) => {
   const [categoria, setCategoria] = useState('');
   const [persona, setPersona] = useState('');
   const [state, dispatch] = useReducer(reducer, defaultState);
+  const [personaId, setPersonaId] = useState('');
 
-  const libroSelected = props.listaLibros.find(
-    (unLibro) => unLibro.id == props.libroId
-  );
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       if (persona) {
+        const libroSelected = props.listaLibros.find(
+          (unLibro) => unLibro.id == props.libroId
+        );
+        if (libroSelected.persona_id !== null) {
+          return window.alert('Este libro ya se encuentra prestado!');
+        }
+
         const editLibro = {
           nombre_libro: libroSelected.nombre_libro,
           descripcion: libroSelected.descripcion,
@@ -453,14 +463,11 @@ const LibroPrestar = (props) => {
           persona_id: persona,
         };
 
-        const unaPersona = props.listaPersonas.find(unaPersona => unaPersona.id == persona)
+        const unaPersona = props.listaPersonas.find(
+          (unaPersona) => unaPersona.id == persona
+        );
         if (!unaPersona) {
-          return window.alert('Ese Id de persona no existe')
-        }
-
-        const libroStatus = props.listaLibros.find(unLibro => unLibro.persona_id != null)
-        if (libroStatus) {
-          return window.alert('Este libro ya se encuentra prestado!')
+          return window.alert('Ese Id de persona no existe');
         }
 
         const response = await axios.put(
@@ -473,6 +480,7 @@ const LibroPrestar = (props) => {
         setDescripcion('');
         setCategoria('');
         setPersona('');
+        setPersonaId('');
         props.handleRender();
         props.handleModalPrestar();
       } else {
@@ -492,7 +500,7 @@ const LibroPrestar = (props) => {
             X
           </button>
         </header>
-        <form className='form cat-modal-form' onSubmit={handleSubmit}>
+        <form className='form cat-modal-form' >
           {/* Persona */}
           <p>Ingresar el Id de la persona a prestar:</p>
           <div className='form-control'>
@@ -505,7 +513,7 @@ const LibroPrestar = (props) => {
               onChange={(e) => setPersona(e.target.value)}
             />
           </div>
-          <button type='submit'>Prestar Libro</button>
+          <button type='submit' onClick={handleSubmit}>Prestar Libro</button>
         </form>
       </section>
     </>
