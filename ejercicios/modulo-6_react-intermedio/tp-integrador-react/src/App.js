@@ -1,29 +1,14 @@
 import axios from 'axios';
-import React, {useEffect, useReducer } from 'react';
+import React, { useEffect, useReducer } from 'react';
 import { reducer } from './reducers/appReducer';
 import Persona from './components/Persona';
 import Categoria from './components/Categoria';
 import Libro from './components/Libro';
-
-const defaultState = {
-  categorias: [],
-  personas: [],
-  libros: [],
-  librosEnCategoria: [],
-  // categoria modal
-  categoriaLibrosModal: false,
-  categoriaEditModal: false,
-  // libros modal
-  libroEditModal: false,
-  libroPrestarModal: false,
-  // persona modal
-  personaEditModal: false,
-};
+import { defaultState } from './components/defaultState';
 
 function App() {
   const [state, dispatch] = useReducer(reducer, defaultState);
 
-  // const fetchAllData = async () => {};
   useEffect(async () => {
     try {
       const fetchCategorias = await axios.get(

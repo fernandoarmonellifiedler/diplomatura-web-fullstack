@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid'; // genera id unicos
+import LibroEdit from '../components/LibroEdit';
+import LibroPrestar from '../components/LibroPrestar';
 
 // COMPONENTE PRINCIPAL
 const Libro = (props) => {
@@ -10,7 +12,7 @@ const Libro = (props) => {
   const [persona, setPersona] = useState('');
   const [editId, setEditId] = useState('');
   const [prestarId, setPrestarId] = useState('');
-  
+
   // funcion para re-renderizar componentes
   const handleRender = async () => {
     try {
@@ -113,7 +115,9 @@ const Libro = (props) => {
   const handleDelete = async (e) => {
     const libroId = e.target.value;
     try {
-      const unLibro = props.state.libros.find((unLibro) => unLibro.id == libroId);
+      const unLibro = props.state.libros.find(
+        (unLibro) => unLibro.id == libroId
+      );
       const result = props.state.personas.find(
         (unaPersona) => unaPersona.id == unLibro.persona_id
       );
@@ -133,7 +137,7 @@ const Libro = (props) => {
 
   // PUT libro
   const handleEdit = (e) => {
-    setEditId('')
+    setEditId('');
     const libroId = e.target.value;
     if (libroId) {
       setEditId(libroId);
@@ -145,7 +149,7 @@ const Libro = (props) => {
 
   // PUT libro prestar
   const handlePrestar = (e) => {
-    setPrestarId('')
+    setPrestarId('');
     const libroId = e.target.value;
     if (libroId) {
       setPrestarId(libroId);
@@ -158,7 +162,9 @@ const Libro = (props) => {
   // PUT libro devolver
   const handleDevolver = async (e) => {
     const libroId = e.target.value;
-    const libroSelected = props.state.libros.find((unLibro) => unLibro.id == libroId);
+    const libroSelected = props.state.libros.find(
+      (unLibro) => unLibro.id == libroId
+    );
 
     const devolverLibro = {
       nombre_libro: libroSelected.nombre_libro,
@@ -320,145 +326,6 @@ const Libro = (props) => {
             </div>
           );
         })}
-      </section>
-    </>
-  );
-};
-
-// COMPONENTE MODAL PARA EDITAR
-const LibroEdit = (props) => {
-  const [descripcion, setDescripcion] = useState('');
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      if (descripcion) {
-      const libroSelected = props.listaLibros.find(
-        (unLibro) => unLibro.id == props.libroEditId
-      );
-      const editLibro = {
-        nombre_libro: libroSelected.nombre_libro,
-        descripcion: descripcion,
-        categoria_id: libroSelected.categoria_id,
-        persona_id: libroSelected.persona_id,
-      };
-      
-      
-        const response = await axios.put(
-          'http://localhost:3005/libro/' + props.libroEditId,
-          editLibro
-        );
-        if (!response.data || response.data?.length == 0) return;
-        props.dispatch({ type: 'BOOK_EDIT_ITEM', payload: response.data });
-        setDescripcion('');
-        props.handleRender();
-        props.handleModalEdit();
-      } else {
-        window.alert('No puedes ingresar valores en blanco');
-      }
-    } catch (e) {
-      console.log(e);
-    }
-  };
-  return (
-    <>
-      <section className='cat-modal'>
-        <header>
-          <h3 className='cat-edit-h3'>Editar libro</h3>
-          <button className='btn cat-edit-btn' onClick={props.handleEdit}>
-            X
-          </button>
-        </header>
-        <form className='form cat-modal-form' onSubmit={handleSubmit}>
-          <p>Solo puedes editar su descripción</p>
-          {/* Descripcion */}
-          <div className='form-control'>
-            <label htmlFor='libro-descripcion'>Descripción: </label>
-            <input
-              type='text'
-              id='libro-descripcion'
-              name='libro-descripcion'
-              value={descripcion}
-              onChange={(e) => setDescripcion(e.target.value)}
-            />
-          </div>
-          <button type='submit'>Editar Libro</button>
-        </form>
-      </section>
-    </>
-  );
-};
-
-// COMPONENTE MODAL PARA PRESTAR
-const LibroPrestar = (props) => {
-  const [persona, setPersona] = useState('');
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      if (persona) {
-        const libroSelected = props.listaLibros.find(
-          (unLibro) => unLibro.id == props.libroPrestarId
-        );
-        if (libroSelected.persona_id !== null) {
-          return window.alert('Este libro ya se encuentra prestado!');
-        }
-
-        const prestarLibro = {
-          nombre_libro: libroSelected.nombre_libro,
-          descripcion: libroSelected.descripcion,
-          categoria_id: libroSelected.categoria_id,
-          persona_id: persona,
-        };
-
-        const unaPersona = props.listaPersonas.find(
-          (unaPersona) => unaPersona.id == persona
-        );
-        if (!unaPersona) {
-          return window.alert('Ese Id de persona no existe');
-        }
-
-        const response = await axios.put(
-          'http://localhost:3005/libro/prestar/' + props.libroPrestarId,
-          prestarLibro
-        );
-        if (!response.data || response.data?.length == 0) return;
-        props.dispatch({ type: 'BOOK_PRESTAR_ITEM', payload: prestarLibro });
-        setPersona('');
-        props.handleRender();
-        props.handleModalPrestar();
-      } else {
-        window.alert('No puedes ingresar valores en blanco');
-      }
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
-  return (
-    <>
-      <section className='cat-modal'>
-        <header>
-          <h3 className='cat-edit-h3'>Editar libro</h3>
-          <button className='btn cat-edit-btn' onClick={props.handlePrestar}>
-            X
-          </button>
-        </header>
-        <form className='form cat-modal-form' >
-          {/* Persona */}
-          <p>Ingresar el Id de la persona a prestar:</p>
-          <div className='form-control'>
-            <label htmlFor='libro-persona'>Prestar a: </label>
-            <input
-              type='text'
-              id='libro-persona'
-              name='libro-persona'
-              value={persona}
-              onChange={(e) => setPersona(e.target.value)}
-            />
-          </div>
-          <button type='submit' onClick={handleSubmit}>Prestar Libro</button>
-        </form>
       </section>
     </>
   );
