@@ -380,12 +380,11 @@ app.put('/libro/:id', async (req, res) => {
     // toma id del libro para agregar al res.send
     query = 'SELECT * FROM libro WHERE id = ?';
     respuesta = await utilQuery(query, [req.params.id]);
-
     // send
     res
       .status(200)
       .send({
-        id: respuesta[0].id,
+        // id: respuesta[0].id,
         nombre: respuesta[0].nombre_libro,
         descripcion: respuesta[0].descripcion,
         categoria_id: respuesta[0].categoria_id,

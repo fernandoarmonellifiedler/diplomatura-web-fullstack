@@ -1,13 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useReducer } from 'react';
 import axios from 'axios';
+import { reducer } from '../reducers/personaReducer'; // import reducer
 import { v4 as uuidv4 } from 'uuid'; // genera id unicos
 
+// reducer: default state
+const defaultState = {
+  personas: [],
+  personaEditModal: false,
+  listaLibros: [],
+};
+
 // COMPONENTE PRINCIPAL
-const Persona = (props) => {
+const Persona = () => {
   const [nombre, setNombre] = useState('');
   const [apellido, setApellido] = useState('');
   const [alias, setAlias] = useState('');
   const [email, setEmail] = useState('');
+  const [state, dispatch] = useReducer(reducer, defaultState); // useReducer
   const [id, setId] = useState('');
 
   // funcion para re-renderizar componentes
@@ -15,7 +24,7 @@ const Persona = (props) => {
     try {
       const response = await axios.get('http://localhost:3005/persona');
       if (!response.data || response.data?.length == 0) return;
-      props.dispatch({ type: 'FETCH_PERSONA_LIST', payload: response.data });
+      dispatch({ type: 'FETCH_LIST', payload: response.data });
     } catch (e) {
       console.log(e);
     }
@@ -23,11 +32,32 @@ const Persona = (props) => {
 
   // funcion para abrir/cerrar el modal
   const handleModalEdit = () => {
-    props.dispatch({
-      type: 'SWITCH_PERSONA_EDIT_MODAL',
-      payload: props.state.personaEditModal,
+    dispatch({
+      type: 'SWITCH_EDIT_MODAL',
+      payload: state.personaEditModal,
     });
   };
+
+  // buscar lista de personas en BD
+  useEffect(async () => {
+    try {
+      const response = await axios.get('http://localhost:3005/persona');
+      if (!response.data || response.data?.length == 0) return;
+      dispatch({ type: 'FETCH_LIST', payload: response.data });
+    } catch (e) {
+      console.log(e);
+    }
+  }, []);
+  // buscar lista de libros en BD
+  useEffect(async () => {
+    try {
+      const response = await axios.get('http://localhost:3005/libro');
+      if (!response.data || response.data?.length == 0) return;
+      dispatch({ type: 'FETCH_LIBRO_LIST', payload: response.data });
+    } catch (e) {
+      console.log(e);
+    }
+  }, []);
 
   // ADD nueva persona
   const handleSubmit = async (e) => {
@@ -41,7 +71,7 @@ const Persona = (props) => {
           email: email.toUpperCase(),
         };
 
-        const findEmail = props.state.personas.find(
+        const findEmail = state.personas.find(
           (unaPersona) => unaPersona.email == nuevaPersona.email
         );
         if (findEmail) {
@@ -53,7 +83,7 @@ const Persona = (props) => {
           nuevaPersona
         );
         if (!response.data || response.data?.length == 0) return;
-        props.dispatch({ type: 'PERSONA_ADD_ITEM', payload: nuevaPersona });
+        dispatch({ type: 'ADD_ITEM', payload: nuevaPersona });
         setNombre('');
         setApellido('');
         setAlias('');
@@ -71,11 +101,11 @@ const Persona = (props) => {
   const handleDelete = async (e) => {
     const personaId = e.target.value;
     try {
-      const libros = await axios.get('http://localhost:3005/libro');
-      if (!libros.data || libros.data?.length == 0) return;
-      props.dispatch({ type: 'FETCH_BOOK_LIST', payload: libros.data });
+      const listaLibros = await axios.get('http://localhost:3005/libro');
+      if (!listaLibros.data || listaLibros.data?.length == 0) return;
+      dispatch({ type: 'FETCH_LIBRO_LIST', payload: listaLibros.data });
       
-      const findLibro = libros.data.find(
+      const findLibro = listaLibros.data.find(
         (unLibro) => unLibro.persona_id == personaId
       );
       if (findLibro) {
@@ -86,7 +116,7 @@ const Persona = (props) => {
         'http://localhost:3005/persona/' + personaId
       );
       if (!response.data || response.data?.length == 0) return;
-      props.dispatch({ type: 'PERSONA_REMOVE_ITEM', payload: personaId });
+      dispatch({ type: 'REMOVE_ITEM', payload: personaId });
     } catch (e) {
       console.log(e);
     }
@@ -106,14 +136,13 @@ const Persona = (props) => {
   return (
     <>
       {/* Modal para editar persona */}
-      {props.state.personaEditModal && (
+      {state.personaEditModal && (
         <PersonaEdit
           personaId={id}
           handleEdit={handleEdit}
-          listaPersonas={props.state.personas}
+          listaPersonas={state.personas}
           handleRender={handleRender}
           handleModalEdit={handleModalEdit}
-          dispatch={props.dispatch}
         />
       )}
       <section className='section'>
@@ -170,9 +199,9 @@ const Persona = (props) => {
         </form>
         {/* iterando la lista de personas de la bd */}
         <h3>Listado de personas</h3>
-        {props.state.personas.map((unaPersona) => {
+        {state.personas.map((unaPersona) => {
           const { id, nombre, apellido, alias, email } = unaPersona;
-          const tieneLibros = props.state.libros.filter(
+          const tieneLibros = state.listaLibros.filter(
             (unLibro) => unLibro.persona_id == id
           );
           return (
@@ -214,6 +243,7 @@ const PersonaEdit = (props) => {
   const [apellido, setApellido] = useState('');
   const [alias, setAlias] = useState('');
   const [email, setEmail] = useState('');
+  const [state, dispatch] = useReducer(reducer, defaultState);
 
   const personaSelected = props.listaPersonas.find(
     (unaPersona) => unaPersona.id == props.personaId
@@ -230,10 +260,10 @@ const PersonaEdit = (props) => {
           alias: alias,
         };
 
-        const findEmail = props.listaPersonas.find(
+        const findEmail = props.listaPersonas.filter(
           (unaPersona) => unaPersona.email == editPersona.email
         );
-        if (findEmail && findEmail.id != props.personaId) {
+        if (findEmail.length != 0) {
           return window.alert('Ese email ya se encuentra registrado!');
         }
 
@@ -242,7 +272,7 @@ const PersonaEdit = (props) => {
           editPersona
         );
         if (!response.data || response.data.length == 0) return;
-        props.dispatch({ type: 'PERSONA_EDIT_ITEM', payload: editPersona });
+        dispatch({ type: 'EDIT_ITEM', payload: response.data });
         setNombre('');
         setApellido('');
         setEmail('');

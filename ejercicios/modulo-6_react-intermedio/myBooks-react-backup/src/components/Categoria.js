@@ -1,18 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useReducer } from 'react';
 import axios from 'axios';
+import { reducer } from '../reducers/categoriaReducer'; // import categoria reducer
 import { v4 as uuidv4 } from 'uuid'; // genera id unicos
 
+// reducer: default state
+const defaultState = {
+  categorias: [],
+  librosEnCategoria: [],
+  libros: [],
+  categoriaLibrosModal: false,
+  categoriaEditModal: false,
+};
+
 // COMPONENTE PRINCIPAL
-const Categoria = (props) => {
+const Categoria = () => {
   const [nombre, setNombre] = useState('');
   const [id, setId] = useState('');
-  
+  const [count, setCount] = useState(0); // resolver: estado para actualizar el componente
+  const [state, dispatch] = useReducer(reducer, defaultState); // useReducer
+
   // funcion para re-renderizar componentes
   const handleRender = async () => {
     try {
       const response = await axios.get('http://localhost:3005/categoria');
       if (!response.data || response.data?.length == 0) return;
-      props.dispatch({ type: 'FETCH_CATEGORIA_LIST', payload: response.data });
+      dispatch({ type: 'FETCH_LIST', payload: response.data });
     } catch (e) {
       console.log(e);
     }
@@ -20,23 +32,34 @@ const Categoria = (props) => {
 
   // funcion para abrir/cerrar el modal
   const handleModalEdit = () => {
-    props.dispatch({
-      type: 'SWITCH_CATEGORIA_EDIT_MODAL',
-      payload: props.state.categoriaEditModal,
+    dispatch({
+      type: 'SWITCH_EDIT_MODAL',
+      payload: state.categoriaEditModal,
     });
   };
 
   // funcion para abrir/cerrar el modal
   const handleModalVerMas = () => {
-    props.dispatch({ type: 'SWITCH_CATEGORIA_MODAL', payload: props.state.categoriaLibrosModal });
+    dispatch({ type: 'SWITCH_MODAL', payload: state.categoriaLibrosModal });
   };
+
+  // busca lista de categorias en BD
+  useEffect(async () => {
+    try {
+      const response = await axios.get('http://localhost:3005/categoria');
+      if (!response.data || response.data?.length == 0) return;
+      dispatch({ type: 'FETCH_LIST', payload: response.data });
+    } catch (e) {
+      console.log(e);
+    }
+  }, []);
 
   // ADD nueva categoria
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       if (
-        props.state.categorias.find(
+        state.categorias.find(
           (unaCategoria) =>
             unaCategoria.nombre_categoria == nombre.toUpperCase()
         )
@@ -52,7 +75,7 @@ const Categoria = (props) => {
           addCategoria
         );
         if (!response.data || response.data?.length == 0) return;
-        props.dispatch({ type: 'CATEGORIA_ADD_ITEM', payload: addCategoria });
+        dispatch({ type: 'ADD_ITEM', payload: addCategoria });
         setNombre('');
         handleRender();
       } else {
@@ -83,7 +106,7 @@ const Categoria = (props) => {
         'http://localhost:3005/categoria/' + categoriaId
       );
       if (!response.data || response.data?.length == 0) return;
-      props.dispatch({ type: 'CATEGORIA_REMOVE_ITEM', payload: categoriaId });
+      dispatch({ type: 'REMOVE_ITEM', payload: categoriaId });
       handleRender();
     } catch (e) {
       console.log(e);
@@ -107,8 +130,8 @@ const Categoria = (props) => {
       try {
         const response = await axios.get('http://localhost:3005/libro');
         if (!response.data || response.data?.length == 0) return;
-        props.dispatch({ type: 'FETCH_BOOK_LIST', payload: response.data });
-        props.dispatch({ type: 'FETCH_BOOKS_ON_CATEGORY', payload: categoriaId });
+        dispatch({ type: 'FETCH_BOOK_LIST', payload: response.data });
+        dispatch({ type: 'FETCH_ONE', payload: categoriaId });
       } catch (e) {
         console.log(e);
       }
@@ -120,18 +143,16 @@ const Categoria = (props) => {
   return (
     <>
       {/* Modal para ver libros en categoria */}
-      {props.state.categoriaLibrosModal && (
-        <CategoriaLibrosModal state={props.state} handleVerMas={handleVerMas} dispatch={props.dispatch} />
+      {state.categoriaLibrosModal && (
+        <CategoriaLibrosModal fullState={state} handleVerMas={handleVerMas} />
       )}
       {/* Modal para editar categoria */}
-      {props.state.categoriaEditModal && (
+      {state.categoriaEditModal && (
         <CategoriaEdit
           catId={id}
           handleEdit={handleEdit}
           handleRender={handleRender}
           handleModalEdit={handleModalEdit}
-          state={props.state}
-          dispatch={props.dispatch}
         />
       )}
       <section className='section'>
@@ -156,7 +177,7 @@ const Categoria = (props) => {
 
         {/* iterando sobre la lista de categorias de la bd */}
         <h3>Listado de categorías</h3>
-        {props.state.categorias.map((unaCategoria) => {
+        {state.categorias.map((unaCategoria) => {
           const { id, nombre_categoria } = unaCategoria;
           return (
             <div className='item' key={id || uuidv4()}>
@@ -188,6 +209,7 @@ const Categoria = (props) => {
 // COMPONENTE MODAL PARA EDITAR
 const CategoriaEdit = (props) => {
   const [nombre, setNombre] = useState('');
+  const [state, dispatch] = useReducer(reducer, defaultState);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -215,7 +237,7 @@ const CategoriaEdit = (props) => {
           editCategoria
         );
         if (!response.data || response.data?.length == 0) return;
-        props.dispatch({ type: 'CATEGORIA_EDIT_ITEM', payload: editCategoria });
+        dispatch({ type: 'EDIT_ITEM', payload: editCategoria });
         setNombre('');
         props.handleRender();
         props.handleModalEdit();
@@ -267,7 +289,7 @@ const CategoriaLibrosModal = (props) => {
         </header>
 
         {/* iterando sobre la lista de libros de la BD */}
-        {props.state.librosEnCategoria.map((unLibro) => {
+        {props.fullState.librosEnCategoria.map((unLibro) => {
           const {
             id,
             nombre_libro,

@@ -1,5 +1,5 @@
 export const reducer = (state, action) => {
-  if (action.type === 'FETCH_BOOK_LIST') {
+  if (action.type === 'FETCH_LIST') {
     const nuevoLibros = action.payload;
     return {
       ...state,
@@ -23,9 +23,18 @@ export const reducer = (state, action) => {
     };
   }
 
-  
+  if (action.type === 'FETCH_ONE') {
+    const libroId = Number(action.payload);
+    return {
+      ...state,
+      librosEnCategoria: state.libros.filter((unLibro) => {
+        //console.log(unLibro.libro_id, unLibro.libro_id === libroId);
+        return unLibro.id === libroId;
+      }),
+    };
+  }
 
-  if (action.type === 'BOOK_ADD_ITEM') {
+  if (action.type === 'ADD_ITEM') {
     const nuevoLibros = [...state.libros, action.payload];
     return {
       ...state,
@@ -33,7 +42,7 @@ export const reducer = (state, action) => {
     };
   }
 
-  if (action.type === 'BOOK_EDIT_ITEM') {
+  if (action.type === 'EDIT_ITEM') {
     const nuevoLibros = [...state.libros, action.payload];
     return {
       ...state,
@@ -41,7 +50,7 @@ export const reducer = (state, action) => {
     };
   }
 
-  if (action.type === 'BOOK_PRESTAR_ITEM') {
+  if (action.type === 'PRESTAR_ITEM') {
     const nuevoLibros = [...state.libros, action.payload];
     return {
       ...state,
@@ -49,7 +58,7 @@ export const reducer = (state, action) => {
     };
   }
 
-  if (action.type === 'BOOK_DEVOLVER_ITEM') {
+  if (action.type === 'DEVOLVER_ITEM') {
     const nuevoLibros = [...state.libros, action.payload];
     return {
       ...state,
@@ -57,7 +66,7 @@ export const reducer = (state, action) => {
     };
   }
 
-  if (action.type === 'BOOK_REMOVE_ITEM') {
+  if (action.type === 'REMOVE_ITEM') {
     return {
       ...state,
       libros: state.libros.filter((unLibro) => {
@@ -66,7 +75,7 @@ export const reducer = (state, action) => {
     };
   }
 
-  if (action.type === 'SWITCH_BOOK_EDIT_MODAL') {
+  if (action.type === 'SWITCH_EDIT_MODAL') {
     const modalState = !action.payload;
     return {
       ...state,
@@ -74,7 +83,7 @@ export const reducer = (state, action) => {
     };
   }
 
-  if (action.type === 'SWITCH_BOOK_PRESTAR_MODAL') {
+  if (action.type === 'SWITCH_PRESTAR_MODAL') {
     const modalState = !action.payload;
     return {
       ...state,

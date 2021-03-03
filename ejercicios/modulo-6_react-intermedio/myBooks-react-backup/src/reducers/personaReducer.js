@@ -1,5 +1,5 @@
 export const reducer = (state, action) => {
-  if (action.type === 'FETCH_PERSONA_LIST') {
+  if (action.type === 'FETCH_LIST') {
     const nuevaPersona = action.payload;
     return {
       ...state,
@@ -15,7 +15,7 @@ export const reducer = (state, action) => {
     };
   }
 
-  if (action.type === 'PERSONA_ADD_ITEM') {
+  if (action.type === 'ADD_ITEM') {
     const nuevaPersona = [...state.personas, action.payload];
     return {
       ...state,
@@ -23,7 +23,7 @@ export const reducer = (state, action) => {
     };
   }
 
-  if (action.type === 'PERSONA_EDIT_ITEM') {
+  if (action.type === 'EDIT_ITEM') {
     const nuevaPersona = [...state.personas, action.payload];
     return {
       ...state,
@@ -31,7 +31,7 @@ export const reducer = (state, action) => {
     };
   }
 
-  if (action.type === 'PERSONA_REMOVE_ITEM') {
+  if (action.type === 'REMOVE_ITEM') {
     return {
       ...state,
       personas: state.personas.filter((unaPersona) => {
@@ -40,7 +40,7 @@ export const reducer = (state, action) => {
     };
   }
 
-  if (action.type === 'SWITCH_PERSONA_EDIT_MODAL') {
+  if (action.type === 'SWITCH_EDIT_MODAL') {
     const modalState = !action.payload;
     return {
       ...state,

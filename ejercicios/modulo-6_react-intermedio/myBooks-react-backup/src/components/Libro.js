@@ -1,22 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useReducer } from 'react';
 import axios from 'axios';
+import { reducer } from '../reducers/libroReducer'; // import reducer
 import { v4 as uuidv4 } from 'uuid'; // genera id unicos
 
+// reducer: default state
+const defaultState = {
+  libros: [],
+  categorias: [],
+  personas: [],
+  libroEditModal: false,
+  libroPrestarModal: false,
+};
+
 // COMPONENTE PRINCIPAL
-const Libro = (props) => {
+const Libro = () => {
   const [nombre, setNombre] = useState('');
   const [descripcion, setDescripcion] = useState('');
   const [categoria, setCategoria] = useState('');
   const [persona, setPersona] = useState('');
-  const [editId, setEditId] = useState('');
-  const [prestarId, setPrestarId] = useState('');
-  
+  const [state, dispatch] = useReducer(reducer, defaultState); // useReducer
+  const [id, setId] = useState('');
+
   // funcion para re-renderizar componentes
   const handleRender = async () => {
     try {
       const response = await axios.get('http://localhost:3005/libro');
       if (!response.data || response.data?.length == 0) return;
-      props.dispatch({ type: 'FETCH_BOOK_LIST', payload: response.data });
+      dispatch({ type: 'FETCH_LIST', payload: response.data });
     } catch (e) {
       console.log(e);
     }
@@ -24,19 +34,52 @@ const Libro = (props) => {
 
   // funcion para abrir/cerrar el modal
   const handleModalEdit = () => {
-    props.dispatch({
-      type: 'SWITCH_BOOK_EDIT_MODAL',
-      payload: props.state.libroEditModal,
+    dispatch({
+      type: 'SWITCH_EDIT_MODAL',
+      payload: state.libroEditModal,
     });
   };
 
   // funcion para abrir/cerrar el modal
   const handleModalPrestar = () => {
-    props.dispatch({
-      type: 'SWITCH_BOOK_PRESTAR_MODAL',
-      payload: props.state.libroPrestarModal,
+    dispatch({
+      type: 'SWITCH_PRESTAR_MODAL',
+      payload: state.libroPrestarModal,
     });
   };
+
+  // buscar lista de libros en BD
+  useEffect(async () => {
+    try {
+      const response = await axios.get('http://localhost:3005/libro');
+      if (!response.data || response.data?.length == 0) return;
+      dispatch({ type: 'FETCH_LIST', payload: response.data });
+    } catch (e) {
+      console.log(e);
+    }
+  }, []);
+
+  // buscar lista de categorias en BD
+  useEffect(async () => {
+    try {
+      const response = await axios.get('http://localhost:3005/categoria');
+      if (!response.data || response.data?.length == 0) return;
+      dispatch({ type: 'FETCH_CATEGORIA_LIST', payload: response.data });
+    } catch (e) {
+      console.log(e);
+    }
+  }, []);
+
+  // buscar lista de personas en BD
+  useEffect(async () => {
+    try {
+      const response = await axios.get('http://localhost:3005/persona');
+      if (!response.data || response.data?.length == 0) return;
+      dispatch({ type: 'FETCH_PERSONA_LIST', payload: response.data });
+    } catch (e) {
+      console.log(e);
+    }
+  }, []);
 
   // ADD nuevo libro
   const handleSubmit = async (e) => {
@@ -46,7 +89,7 @@ const Libro = (props) => {
       // valida que exista la persona
       const response = await axios.get('http://localhost:3005/persona');
       if (!response.data || response.data?.length == 0) return;
-      props.dispatch({ type: 'FETCH_PERSONA_LIST', payload: response.data });
+      dispatch({ type: 'FETCH_PERSONA_LIST', payload: response.data });
       const result = response.data.filter(
         (unaPersona) => unaPersona.id == persona
       );
@@ -60,7 +103,7 @@ const Libro = (props) => {
       // valida que exista la categoria
       const response2 = await axios.get('http://localhost:3005/categoria');
       if (!response2.data || response2.data?.length == 0) return;
-      props.dispatch({ type: 'FETCH_CATEGORIA_LIST', payload: response2.data });
+      dispatch({ type: 'FETCH_CATEGORIA_LIST', payload: response2.data });
       const result2 = response2.data.filter(
         (unaCategoria) => unaCategoria.id == categoria
       );
@@ -82,7 +125,7 @@ const Libro = (props) => {
           persona_id: persona || null,
         };
         // valida que el nombre no exista
-        const libroExiste = props.state.libros.filter(
+        const libroExiste = state.libros.filter(
           (unLibro) => unLibro.nombre_libro == nuevoLibro.nombre_libro
         );
         console.log(libroExiste);
@@ -95,7 +138,7 @@ const Libro = (props) => {
           nuevoLibro
         );
         if (!libroPost.data || libroPost.data?.length == 0) return;
-        props.dispatch({ type: 'BOOK_ADD_ITEM', payload: nuevoLibro });
+        dispatch({ type: 'ADD_ITEM', payload: nuevoLibro });
         setNombre('');
         setDescripcion('');
         setCategoria('');
@@ -113,8 +156,8 @@ const Libro = (props) => {
   const handleDelete = async (e) => {
     const libroId = e.target.value;
     try {
-      const unLibro = props.state.libros.find((unLibro) => unLibro.id == libroId);
-      const result = props.state.personas.find(
+      const unLibro = state.libros.find((unLibro) => unLibro.id == libroId);
+      const result = state.personas.find(
         (unaPersona) => unaPersona.id == unLibro.persona_id
       );
       if (result) {
@@ -124,7 +167,7 @@ const Libro = (props) => {
         'http://localhost:3005/libro/' + libroId
       );
       if (!response.data || response.data?.length == 0) return;
-      props.dispatch({ type: 'BOOK_REMOVE_ITEM', payload: libroId });
+      dispatch({ type: 'REMOVE_ITEM', payload: libroId });
       handleRender();
     } catch (e) {
       console.log(e);
@@ -133,11 +176,10 @@ const Libro = (props) => {
 
   // PUT libro
   const handleEdit = (e) => {
-    setEditId('')
     const libroId = e.target.value;
     if (libroId) {
-      setEditId(libroId);
       handleModalEdit();
+      setId(libroId);
     } else {
       handleModalEdit();
     }
@@ -145,11 +187,10 @@ const Libro = (props) => {
 
   // PUT libro prestar
   const handlePrestar = (e) => {
-    setPrestarId('')
     const libroId = e.target.value;
     if (libroId) {
-      setPrestarId(libroId);
       handleModalPrestar();
+      setId(libroId);
     } else {
       handleModalPrestar();
     }
@@ -158,7 +199,7 @@ const Libro = (props) => {
   // PUT libro devolver
   const handleDevolver = async (e) => {
     const libroId = e.target.value;
-    const libroSelected = props.state.libros.find((unLibro) => unLibro.id == libroId);
+    const libroSelected = state.libros.find((unLibro) => unLibro.id == libroId);
 
     const devolverLibro = {
       nombre_libro: libroSelected.nombre_libro,
@@ -172,8 +213,8 @@ const Libro = (props) => {
         devolverLibro
       );
       if (!response.data || response.data?.length == 0) return;
-      props.dispatch({ type: 'BOOK_REMOVE_ITEM', payload: libroId });
-      props.dispatch({ type: 'BOOK_DEVOLVER_ITEM', payload: response.data });
+      dispatch({ type: 'REMOVE_ITEM', payload: libroId });
+      dispatch({ type: 'DEVOLVER_ITEM', payload: response.data });
       handleRender();
     } catch (e) {
       console.log(e);
@@ -183,26 +224,24 @@ const Libro = (props) => {
   return (
     <>
       {/* Modal para editar libro */}
-      {props.state.libroEditModal && (
+      {state.libroEditModal && (
         <LibroEdit
-          libroEditId={editId}
+          libroId={id}
           handleEdit={handleEdit}
-          listaLibros={props.state.libros}
+          listaLibros={state.libros}
           handleRender={handleRender}
           handleModalEdit={handleModalEdit}
-          dispatch={props.dispatch}
         />
       )}
       {/* Modal para prestar libro */}
-      {props.state.libroPrestarModal && (
+      {state.libroPrestarModal && (
         <LibroPrestar
-          libroPrestarId={prestarId}
+          libroId={id}
           handlePrestar={handlePrestar}
-          listaLibros={props.state.libros}
+          listaLibros={state.libros}
           handleRender={handleRender}
           handleModalPrestar={handleModalPrestar}
-          listaPersonas={props.state.personas}
-          dispatch={props.dispatch}
+          listaPersonas={state.personas}
         />
       )}
 
@@ -260,7 +299,7 @@ const Libro = (props) => {
         </form>
         {/* iterando la lista de libros de la bd */}
         <h3>Listado de libros</h3>
-        {props.state.libros.map((unLibro) => {
+        {state.libros.map((unLibro) => {
           const {
             id,
             nombre_libro,
@@ -268,11 +307,11 @@ const Libro = (props) => {
             categoria_id,
             persona_id,
           } = unLibro;
-          const categoriaEnUso = props.state.categorias.filter(
+          const categoriaEnUso = state.categorias.filter(
             (unaCategoria) => categoria_id == unaCategoria.id
           );
 
-          const NombrePersona = props.state.personas.filter(
+          const NombrePersona = state.personas.filter(
             (unaPersona) => persona_id == unaPersona.id
           );
 
@@ -327,30 +366,36 @@ const Libro = (props) => {
 
 // COMPONENTE MODAL PARA EDITAR
 const LibroEdit = (props) => {
+  const [nombre, setNombre] = useState('');
   const [descripcion, setDescripcion] = useState('');
+  const [categoria, setCategoria] = useState('');
+  const [persona, setPersona] = useState('');
+  const [state, dispatch] = useReducer(reducer, defaultState);
+
+  const libroSelected = props.listaLibros.find(
+    (unLibro) => unLibro.id == props.libroId
+  );
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      if (descripcion) {
-      const libroSelected = props.listaLibros.find(
-        (unLibro) => unLibro.id == props.libroEditId
-      );
       const editLibro = {
         nombre_libro: libroSelected.nombre_libro,
         descripcion: descripcion,
         categoria_id: libroSelected.categoria_id,
         persona_id: libroSelected.persona_id,
       };
-      
-      
+      if (descripcion) {
         const response = await axios.put(
-          'http://localhost:3005/libro/' + props.libroEditId,
+          'http://localhost:3005/libro/' + props.libroId,
           editLibro
         );
         if (!response.data || response.data?.length == 0) return;
-        props.dispatch({ type: 'BOOK_EDIT_ITEM', payload: response.data });
+        dispatch({ type: 'EDIT_ITEM', payload: response.data });
+        setNombre('');
         setDescripcion('');
+        setCategoria('');
+        setPersona('');
         props.handleRender();
         props.handleModalEdit();
       } else {
@@ -391,20 +436,27 @@ const LibroEdit = (props) => {
 
 // COMPONENTE MODAL PARA PRESTAR
 const LibroPrestar = (props) => {
+  const [nombre, setNombre] = useState('');
+  const [descripcion, setDescripcion] = useState('');
+  const [categoria, setCategoria] = useState('');
   const [persona, setPersona] = useState('');
+  const [state, dispatch] = useReducer(reducer, defaultState);
+  const [personaId, setPersonaId] = useState('');
+
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       if (persona) {
         const libroSelected = props.listaLibros.find(
-          (unLibro) => unLibro.id == props.libroPrestarId
+          (unLibro) => unLibro.id == props.libroId
         );
         if (libroSelected.persona_id !== null) {
           return window.alert('Este libro ya se encuentra prestado!');
         }
 
-        const prestarLibro = {
+        const editLibro = {
           nombre_libro: libroSelected.nombre_libro,
           descripcion: libroSelected.descripcion,
           categoria_id: libroSelected.categoria_id,
@@ -419,12 +471,16 @@ const LibroPrestar = (props) => {
         }
 
         const response = await axios.put(
-          'http://localhost:3005/libro/prestar/' + props.libroPrestarId,
-          prestarLibro
+          'http://localhost:3005/libro/prestar/' + props.libroId,
+          editLibro
         );
         if (!response.data || response.data?.length == 0) return;
-        props.dispatch({ type: 'BOOK_PRESTAR_ITEM', payload: prestarLibro });
+        dispatch({ type: 'PRESTAR_ITEM', payload: editLibro });
+        setNombre('');
+        setDescripcion('');
+        setCategoria('');
         setPersona('');
+        setPersonaId('');
         props.handleRender();
         props.handleModalPrestar();
       } else {
