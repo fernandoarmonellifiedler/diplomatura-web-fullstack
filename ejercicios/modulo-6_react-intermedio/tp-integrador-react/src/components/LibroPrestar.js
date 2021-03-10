@@ -51,7 +51,7 @@ const LibroPrestar = (props) => {
     <>
       <section className='cat-modal'>
         <header>
-          <h3 className='cat-edit-h3'>Editar libro</h3>
+          <h3 className='cat-edit-h3'>Prestar libro</h3>
           <button className='btn cat-edit-btn' onClick={props.handlePrestar}>
             X
           </button>
