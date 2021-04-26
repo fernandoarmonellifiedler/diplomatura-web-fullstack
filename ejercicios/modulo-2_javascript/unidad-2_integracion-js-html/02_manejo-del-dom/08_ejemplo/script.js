@@ -1,6 +1,6 @@
 var table = document.getElementsByTagName("tr");
 var titulo = document.getElementsByTagName("h1")
-
+console.log(titulo);
 function dibujar() {
     i = 0;
 
